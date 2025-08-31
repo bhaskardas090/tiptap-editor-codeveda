@@ -1,6 +1,6 @@
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
-import IframeComponent from "./IframeComponent";
+import IframeComponent from "./IframeComponent.tsx";
 
 interface IframeAttributes {
   src: string;
@@ -17,6 +17,12 @@ export const Iframe = Node.create({
 
   group: "block",
   atom: true,
+
+  addOptions() {
+    return {
+      readOnly: false,
+    };
+  },
 
   addAttributes() {
     return {
@@ -57,8 +63,11 @@ export const Iframe = Node.create({
         },
       },
       allow: {
-        default: "",
-        parseHTML: (element) => element.getAttribute("allow") || "",
+        default:
+          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
+        parseHTML: (element) =>
+          element.getAttribute("allow") ||
+          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
         renderHTML: (attributes) => {
           return {
             allow: attributes.allow,
@@ -66,8 +75,11 @@ export const Iframe = Node.create({
         },
       },
       sandbox: {
-        default: "",
-        parseHTML: (element) => element.getAttribute("sandbox") || "",
+        default:
+          "allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-presentation",
+        parseHTML: (element) =>
+          element.getAttribute("sandbox") ||
+          "allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-presentation",
         renderHTML: (attributes) => {
           return {
             sandbox: attributes.sandbox,
@@ -110,8 +122,12 @@ export const Iframe = Node.create({
               width: options.width || "100%",
               height: options.height || "500px",
               title: options.title || "Embedded Content",
-              allow: options.allow || "",
-              sandbox: options.sandbox || "",
+              allow:
+                options.allow ||
+                "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
+              sandbox:
+                options.sandbox ||
+                "allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-presentation",
               style: options.style || "",
             },
           });

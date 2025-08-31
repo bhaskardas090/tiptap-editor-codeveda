@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
 import { Button } from "../../ui/button";
 import { Settings, ExternalLink, Copy, Trash2 } from "lucide-react";
@@ -27,10 +27,46 @@ const IframeComponent: React.FC<NodeViewProps> = ({
     width: node.attrs.width || "100%",
     height: node.attrs.height || "500px",
     title: node.attrs.title || "",
-    allow: node.attrs.allow || "",
-    sandbox: node.attrs.sandbox || "",
+    allow:
+      node.attrs.allow ||
+      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
+    sandbox:
+      node.attrs.sandbox ||
+      "allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-presentation",
     style: node.attrs.style || "",
   });
+
+  // Function to automatically set appropriate sandbox attributes based on URL
+  const getOptimalSandboxAttributes = (url: string): string => {
+    const urlLower = url.toLowerCase();
+
+    // YouTube
+    if (urlLower.includes("youtube.com") || urlLower.includes("youtu.be")) {
+      return "allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-presentation allow-popups-to-escape-sandbox";
+    }
+
+    // CodeSandbox
+    if (urlLower.includes("codesandbox.io")) {
+      return "allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-presentation allow-popups-to-escape-sandbox allow-top-navigation";
+    }
+
+    if (urlLower.includes("stackblitz.com")) {
+      return "allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-presentation allow-popups-to-escape-sandbox allow-top-navigation";
+    }
+
+    // Default for unknown services
+    return "allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-presentation";
+  };
+
+  // Update sandbox attributes when URL changes
+  const handleSrcChange = (newSrc: string) => {
+    const optimalSandbox = getOptimalSandboxAttributes(newSrc);
+    setAttributes({
+      ...attributes,
+      src: newSrc,
+      sandbox: optimalSandbox,
+    });
+  };
 
   const handleSave = () => {
     if (!isEditable) return; // Don't allow editing in read-only mode
@@ -44,14 +80,40 @@ const IframeComponent: React.FC<NodeViewProps> = ({
       width: node.attrs.width || "100%",
       height: node.attrs.height || "500px",
       title: node.attrs.title || "",
-      allow: node.attrs.allow || "",
-      sandbox: node.attrs.sandbox || "",
+      allow:
+        node.attrs.allow ||
+        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
+      sandbox:
+        node.attrs.sandbox ||
+        "allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-presentation",
       style: node.attrs.style || "",
     });
     setIsEditing(false);
   };
 
-  const isEditable = editor?.isEditable ?? false;
+  // Check if the editor is editable by checking the editor's editable state
+  const [isEditable, setIsEditable] = useState(editor?.isEditable ?? false);
+
+  // Update isEditable when editor state changes
+  useEffect(() => {
+    if (editor) {
+      const updateEditableState = () => {
+        setIsEditable(editor.isEditable);
+      };
+
+      // Set initial state
+      updateEditableState();
+
+      // Listen for changes
+      editor.on("update", updateEditableState);
+      editor.on("selectionUpdate", updateEditableState);
+
+      return () => {
+        editor.off("update", updateEditableState);
+        editor.off("selectionUpdate", updateEditableState);
+      };
+    }
+  }, [editor]);
 
   const handleEdit = () => {
     if (!isEditable) return; // Don't allow editing in read-only mode
@@ -69,13 +131,17 @@ const IframeComponent: React.FC<NodeViewProps> = ({
     const iframe = doc.querySelector("iframe");
 
     if (iframe) {
+      const src = iframe.getAttribute("src") || "";
       const newAttributes: IframeAttributes = {
-        src: iframe.getAttribute("src") || "",
+        src: src,
         width: iframe.getAttribute("width") || "100%",
         height: iframe.getAttribute("height") || "500px",
         title: iframe.getAttribute("title") || "",
-        allow: iframe.getAttribute("allow") || "",
-        sandbox: iframe.getAttribute("sandbox") || "",
+        allow:
+          iframe.getAttribute("allow") ||
+          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
+        sandbox:
+          iframe.getAttribute("sandbox") || getOptimalSandboxAttributes(src),
         style: iframe.getAttribute("style") || "",
       };
       setAttributes(newAttributes);
@@ -126,12 +192,14 @@ const IframeComponent: React.FC<NodeViewProps> = ({
                 <input
                   type="url"
                   value={attributes.src}
-                  onChange={(e) =>
-                    setAttributes({ ...attributes, src: e.target.value })
-                  }
+                  onChange={(e) => handleSrcChange(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="https://example.com/embed"
                 />
+                <div className="text-xs text-gray-600 mt-1">
+                  Sandbox attributes are automatically configured based on the
+                  URL for optimal compatibility.
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -197,6 +265,26 @@ const IframeComponent: React.FC<NodeViewProps> = ({
                 Paste your complete iframe HTML code here. The extension will
                 automatically extract the attributes.
               </div>
+
+              <div className="border-t pt-3">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Sandbox Attributes (Advanced)
+                </label>
+                <input
+                  type="text"
+                  value={attributes.sandbox}
+                  onChange={(e) =>
+                    setAttributes({ ...attributes, sandbox: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-xs"
+                  placeholder="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-presentation"
+                />
+                <div className="text-xs text-gray-600 mt-1">
+                  Override automatic sandbox configuration if needed. Common
+                  values: allow-scripts, allow-same-origin, allow-forms,
+                  allow-popups
+                </div>
+              </div>
             </div>
           )}
 
@@ -245,7 +333,7 @@ const IframeComponent: React.FC<NodeViewProps> = ({
           className="rounded-lg"
         />
 
-        {/* Hover Controls */}
+        {/* Hover Controls - Only show when editable */}
         {isEditable && (
           <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/90 backdrop-blur-sm rounded-lg p-1 shadow-lg border">
             <div className="flex gap-1">
