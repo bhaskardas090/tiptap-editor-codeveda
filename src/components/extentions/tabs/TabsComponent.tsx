@@ -18,7 +18,7 @@ export default function TabsComponent({
 
   const tabItems = node.content?.content || [];
   const tabCount = node.attrs?.tabCount || tabItems.length;
-  const isEditable = editor?.isEditable ?? true;
+  const isEditable = editor?.isEditable ?? false;
 
   useEffect(() => {
     if (editingTabIndex !== null && titleInputRef.current) {
@@ -36,6 +36,16 @@ export default function TabsComponent({
     if (!isEditable) return; // Don't allow editing in read-only mode
     setEditingTabIndex(index);
     setEditingTitle(currentTitle);
+  };
+
+  const handleDeleteTabs = () => {
+    if (!isEditable) return; // Don't allow deletion in read-only mode
+    if (
+      editor &&
+      confirm("Are you sure you want to delete this tabs component?")
+    ) {
+      editor.chain().focus().deleteNode("tabs").run();
+    }
   };
 
   const handleTitleSave = () => {
@@ -57,15 +67,6 @@ export default function TabsComponent({
     } else if (e.key === "Escape") {
       setEditingTabIndex(null);
       setEditingTitle("");
-    }
-  };
-
-  const handleDeleteTabs = () => {
-    if (
-      editor &&
-      confirm("Are you sure you want to delete this tabs component?")
-    ) {
-      editor.chain().focus().deleteNode("tabs").run();
     }
   };
 

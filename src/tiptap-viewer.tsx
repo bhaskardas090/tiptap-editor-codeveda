@@ -45,7 +45,7 @@ import("highlight.js/lib/languages/json").then((json) =>
 
 const Tiptap = () => {
   const [, forceUpdate] = useState({});
-  const [isReadOnly, setIsReadOnly] = useState(false);
+  const [isReadOnly, setIsReadOnly] = useState(true);
 
   const editor = useEditor({
     extensions: [

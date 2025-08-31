@@ -17,6 +17,7 @@ const IframeComponent: React.FC<NodeViewProps> = ({
   node,
   updateAttributes,
   deleteNode,
+  editor,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editMode, setEditMode] = useState<"simple" | "advanced">("simple");
@@ -32,6 +33,7 @@ const IframeComponent: React.FC<NodeViewProps> = ({
   });
 
   const handleSave = () => {
+    if (!isEditable) return; // Don't allow editing in read-only mode
     updateAttributes(attributes);
     setIsEditing(false);
   };
@@ -47,6 +49,13 @@ const IframeComponent: React.FC<NodeViewProps> = ({
       style: node.attrs.style || "",
     });
     setIsEditing(false);
+  };
+
+  const isEditable = editor?.isEditable ?? false;
+
+  const handleEdit = () => {
+    if (!isEditable) return; // Don't allow editing in read-only mode
+    setIsEditing(true);
   };
 
   const copyIframeCode = () => {
@@ -237,46 +246,52 @@ const IframeComponent: React.FC<NodeViewProps> = ({
         />
 
         {/* Hover Controls */}
-        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/90 backdrop-blur-sm rounded-lg p-1 shadow-lg border">
-          <div className="flex gap-1">
-            <Button
-              onClick={() => setIsEditing(true)}
-              size="sm"
-              variant="ghost"
-              className="h-8 w-8 p-0"
-              title="Edit iframe"
-            >
-              <Settings className="h-4 w-4" />
-            </Button>
-            <Button
-              onClick={() => window.open(node.attrs.src, "_blank")}
-              size="sm"
-              variant="ghost"
-              className="h-8 w-8 p-0"
-              title="Open in new tab"
-            >
-              <ExternalLink className="h-4 w-4" />
-            </Button>
-            <Button
-              onClick={copyIframeCode}
-              size="sm"
-              variant="ghost"
-              className="h-8 w-8 p-0"
-              title="Copy iframe code"
-            >
-              <Copy className="h-4 w-4" />
-            </Button>
-            <Button
-              onClick={() => deleteNode()}
-              size="sm"
-              variant="ghost"
-              className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-              title="Delete iframe"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+        {isEditable && (
+          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/90 backdrop-blur-sm rounded-lg p-1 shadow-lg border">
+            <div className="flex gap-1">
+              <Button
+                onClick={handleEdit}
+                size="sm"
+                variant="ghost"
+                className="h-8 w-8 p-0"
+                title="Edit iframe"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+              <Button
+                onClick={() => window.open(node.attrs.src, "_blank")}
+                size="sm"
+                variant="ghost"
+                className="h-8 w-8 p-0"
+                title="Open in new tab"
+              >
+                <ExternalLink className="h-4 w-4" />
+              </Button>
+              <Button
+                onClick={copyIframeCode}
+                size="sm"
+                variant="ghost"
+                className="h-8 w-8 p-0"
+                title="Copy iframe code"
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
+              <Button
+                onClick={() => {
+                  if (isEditable) {
+                    deleteNode();
+                  }
+                }}
+                size="sm"
+                variant="ghost"
+                className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                title="Delete iframe"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Source URL display */}
         {node.attrs.src && (

@@ -15,7 +15,7 @@ export default function AccordionComponent({
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState(node.attrs?.title || "Accordion Title");
   const titleInputRef = useRef<HTMLInputElement>(null);
-  const isEditable = editor?.isEditable ?? true;
+  const isEditable = editor?.isEditable ?? false;
 
   useEffect(() => {
     if (isEditingTitle && titleInputRef.current) {
@@ -45,6 +45,7 @@ export default function AccordionComponent({
   };
 
   const handleDeleteAccordion = () => {
+    if (!isEditable) return; // Don't allow deletion in read-only mode
     if (editor && confirm("Are you sure you want to delete this accordion?")) {
       editor.chain().focus().deleteNode("accordion").run();
     }

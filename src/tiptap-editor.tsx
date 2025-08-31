@@ -253,7 +253,7 @@ const Tiptap = () => {
     if (!editor) return;
 
     const updateTableMenuPosition = () => {
-      if (editor.isActive("table")) {
+      if (editor.isActive("table") && !isReadOnly) {
         const tableElement = editor.view.dom.querySelector("table");
         if (tableElement) {
           const rect = tableElement.getBoundingClientRect();
@@ -495,8 +495,8 @@ const Tiptap = () => {
               <TableIcon className="h-4 w-4" />
             </MenuButton>
 
-            {/* Table Controls - Only show when inside a table */}
-            {editor.isActive("table") && (
+            {/* Table Controls - Only show when inside a table and not readonly */}
+            {editor.isActive("table") && !isReadOnly && (
               <>
                 <div className="h-6 w-px bg-gray-300 mx-1" />
 
@@ -550,14 +550,16 @@ const Tiptap = () => {
           </div>
 
           {/* File Upload */}
-          <div className="flex gap-1 border-r border-gray-300 pr-2">
-            <MenuButton onClick={handleImageUpload} title="Upload Image">
-              <ImageIcon className="h-4 w-4" />
-            </MenuButton>
-            <MenuButton onClick={handleVideoUpload} title="Upload Video">
-              <VideoIcon className="h-4 w-4" />
-            </MenuButton>
-          </div>
+          {!isReadOnly && (
+            <div className="flex gap-1 border-r border-gray-300 pr-2">
+              <MenuButton onClick={handleImageUpload} title="Upload Image">
+                <ImageIcon className="h-4 w-4" />
+              </MenuButton>
+              <MenuButton onClick={handleVideoUpload} title="Upload Video">
+                <VideoIcon className="h-4 w-4" />
+              </MenuButton>
+            </div>
+          )}
 
           {/* Code Blocks */}
           <div className="flex gap-1 border-r border-gray-300 pr-2">
@@ -568,94 +570,100 @@ const Tiptap = () => {
             >
               <Code className="h-4 w-4" />
             </MenuButton>
-            <MenuButton
-              onClick={() =>
-                (editor.chain().focus() as any).insertAccordion().run()
-              }
-              title="Insert Accordion"
-            >
-              <PanelTopOpen className="h-4 w-4 cursor-pointer" />
-            </MenuButton>
+            {!isReadOnly && (
+              <MenuButton
+                onClick={() =>
+                  (editor.chain().focus() as any).insertAccordion().run()
+                }
+                title="Insert Accordion"
+              >
+                <PanelTopOpen className="h-4 w-4 cursor-pointer" />
+              </MenuButton>
+            )}
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-1 border-r border-gray-300 pr-2">
-            <MenuButton
-              onClick={() =>
-                (editor.chain().focus() as any)
-                  .insertTabs({ tabCount: 2 })
-                  .run()
-              }
-              title="Insert 2 Tabs"
-            >
-              <span className="text-xs font-mono">2T</span>
-            </MenuButton>
-            <MenuButton
-              onClick={() =>
-                (editor.chain().focus() as any)
-                  .insertTabs({ tabCount: 3 })
-                  .run()
-              }
-              title="Insert 3 Tabs"
-            >
-              <span className="text-xs font-mono">3T</span>
-            </MenuButton>
-            <MenuButton
-              onClick={() =>
-                (editor.chain().focus() as any)
-                  .insertTabs({ tabCount: 4 })
-                  .run()
-              }
-              title="Insert 4 Tabs"
-            >
-              <span className="text-xs font-mono">4T</span>
-            </MenuButton>
-            <MenuButton
-              onClick={() =>
-                (editor.chain().focus() as any)
-                  .insertTabs({ tabCount: 5 })
-                  .run()
-              }
-              title="Insert 5 Tabs"
-            >
-              <span className="text-xs font-mono">5T</span>
-            </MenuButton>
-            <MenuButton
-              onClick={() =>
-                (editor.chain().focus() as any)
-                  .insertTabs({ tabCount: 6 })
-                  .run()
-              }
-              title="Insert 6 Tabs"
-            >
-              <span className="text-xs font-mono">6T</span>
-            </MenuButton>
-          </div>
+          {!isReadOnly && (
+            <div className="flex gap-1 border-r border-gray-300 pr-2">
+              <MenuButton
+                onClick={() =>
+                  (editor.chain().focus() as any)
+                    .insertTabs({ tabCount: 2 })
+                    .run()
+                }
+                title="Insert 2 Tabs"
+              >
+                <span className="text-xs font-mono">2T</span>
+              </MenuButton>
+              <MenuButton
+                onClick={() =>
+                  (editor.chain().focus() as any)
+                    .insertTabs({ tabCount: 3 })
+                    .run()
+                }
+                title="Insert 3 Tabs"
+              >
+                <span className="text-xs font-mono">3T</span>
+              </MenuButton>
+              <MenuButton
+                onClick={() =>
+                  (editor.chain().focus() as any)
+                    .insertTabs({ tabCount: 4 })
+                    .run()
+                }
+                title="Insert 4 Tabs"
+              >
+                <span className="text-xs font-mono">4T</span>
+              </MenuButton>
+              <MenuButton
+                onClick={() =>
+                  (editor.chain().focus() as any)
+                    .insertTabs({ tabCount: 5 })
+                    .run()
+                }
+                title="Insert 5 Tabs"
+              >
+                <span className="text-xs font-mono">5T</span>
+              </MenuButton>
+              <MenuButton
+                onClick={() =>
+                  (editor.chain().focus() as any)
+                    .insertTabs({ tabCount: 6 })
+                    .run()
+                }
+                title="Insert 6 Tabs"
+              >
+                <span className="text-xs font-mono">6T</span>
+              </MenuButton>
+            </div>
+          )}
 
           {/* Iframe */}
-          <div className="flex gap-1 border-r border-gray-300 pr-2">
-            <MenuButton
-              onClick={() => {
-                const url = prompt(
-                  "Enter the URL for your iframe:",
-                  "https://example.com/embed"
-                );
-                if (url) {
-                  (editor.chain().focus() as any)
-                    .insertIframe({
-                      src: url,
-                      width: "100%",
-                      height: "500px",
-                      title: "Embedded Content",
-                    })
-                    .run();
-                }
-              }}
-              title="Insert iframe"
-            >
-              <Frame className="h-4 w-4" />
-            </MenuButton>
-          </div>
+          {!isReadOnly && (
+            <div className="flex gap-1 border-r border-gray-300 pr-2">
+              <MenuButton
+                onClick={() => {
+                  const url = prompt(
+                    "Enter the URL for your iframe:",
+                    "https://example.com/embed"
+                  );
+                  if (url) {
+                    (editor.chain().focus() as any)
+                      .insertIframe({
+                        src: url,
+                        width: "100%",
+                        height: "500px",
+                        title: "Embedded Content",
+                      })
+                      .run();
+                  }
+                }}
+                title="Insert iframe"
+              >
+                <Frame className="h-4 w-4" />
+              </MenuButton>
+            </div>
+          )}
         </div>
       )}
 
@@ -830,7 +838,7 @@ const Tiptap = () => {
         )}
 
         {/* Custom Table Menu positioned above table */}
-        {tableMenuPosition.show && (
+        {tableMenuPosition.show && !isReadOnly && (
           <div
             className="table-bubble-menu bg-white border-2 border-blue-500 rounded-lg p-2 shadow-lg"
             style={{
