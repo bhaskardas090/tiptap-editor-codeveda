@@ -16,7 +16,6 @@ import Highlight from "@tiptap/extension-highlight";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import Blockquote from "@tiptap/extension-blockquote";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
-import { createLowlight } from "lowlight";
 import {
   Accordion,
   AccordionItem,
@@ -40,9 +39,6 @@ import {
   Table as TableIcon,
   Image as ImageIcon,
   Video as VideoIcon,
-  Columns2,
-  Columns3,
-  Columns4,
   FileText,
   Bold,
   Italic,
@@ -60,27 +56,22 @@ import {
   PanelTopOpen,
 } from "lucide-react";
 
+import css from "highlight.js/lib/languages/css";
+import js from "highlight.js/lib/languages/javascript";
+import ts from "highlight.js/lib/languages/typescript";
+import html from "highlight.js/lib/languages/xml";
+// load all languages with "all" or common languages with "common"
+import { all, createLowlight } from "lowlight";
+
 // Configure lowlight with common languages
-const lowlight = createLowlight();
-// Register languages for syntax highlighting
-import("highlight.js/lib/languages/javascript").then((js) =>
-  lowlight.register("javascript", js.default)
-);
-import("highlight.js/lib/languages/typescript").then((ts) =>
-  lowlight.register("typescript", ts.default)
-);
-import("highlight.js/lib/languages/python").then((py) =>
-  lowlight.register("python", py.default)
-);
-import("highlight.js/lib/languages/css").then((css) =>
-  lowlight.register("css", css.default)
-);
-import("highlight.js/lib/languages/xml").then((xml) =>
-  lowlight.register("html", xml.default)
-);
-import("highlight.js/lib/languages/json").then((json) =>
-  lowlight.register("json", json.default)
-);
+const lowlight = createLowlight(all);
+
+// This is only an example, all supported languages are already loaded above
+// but you can also register only specific languages to reduce bundle-size
+lowlight.register("html", html);
+lowlight.register("css", css);
+lowlight.register("js", js);
+lowlight.register("ts", ts);
 
 const MenuButton = ({
   onClick,
@@ -206,7 +197,6 @@ const Tiptap = () => {
       }),
       CodeBlockLowlight.configure({
         lowlight,
-        defaultLanguage: "javascript",
       }),
       Blockquote,
       HorizontalRule,
@@ -225,7 +215,7 @@ const Tiptap = () => {
         <li>Block quotes</li>
         <li>Code blocks with syntax highlighting</li>
         <li>File uploads for images and videos</li>
-        <li>Column layouts</li>
+
         <li>And much more...</li>
       </ul>
       <p>Place your cursor at an empty line to see the floating menu, or select text to see formatting options in the bubble menu.</p>
@@ -505,16 +495,7 @@ const Tiptap = () => {
             {editor.isActive("table") && (
               <>
                 <div className="h-6 w-px bg-gray-300 mx-1" />
-                <MenuButton
-                  onClick={() => editor.chain().focus().addColumnBefore().run()}
-                  title="Add Column Before"
-                  className="h-8 w-auto px-2"
-                >
-                  <div className="flex items-center gap-1">
-                    <Plus className="h-3 w-3" />
-                    <span className="text-xs">Col</span>
-                  </div>
-                </MenuButton>
+
                 <MenuButton
                   onClick={() => editor.chain().focus().addRowBefore().run()}
                   title="Add Row Before"
@@ -525,16 +506,7 @@ const Tiptap = () => {
                     <span className="text-xs">Row</span>
                   </div>
                 </MenuButton>
-                <MenuButton
-                  onClick={() => editor.chain().focus().deleteColumn().run()}
-                  title="Delete Column"
-                  className="text-red-600 hover:bg-red-50 h-8 w-auto px-2"
-                >
-                  <div className="flex items-center gap-1">
-                    <Minus className="h-3 w-3" />
-                    <span className="text-xs">Col</span>
-                  </div>
-                </MenuButton>
+
                 <MenuButton
                   onClick={() => editor.chain().focus().deleteRow().run()}
                   title="Delete Row"
@@ -580,40 +552,6 @@ const Tiptap = () => {
             </MenuButton>
             <MenuButton onClick={handleVideoUpload} title="Upload Video">
               <VideoIcon className="h-4 w-4" />
-            </MenuButton>
-          </div>
-
-          {/* Columns */}
-          <div className="flex gap-1 border-r border-gray-300 pr-2">
-            <MenuButton
-              onClick={() => {
-                const twoColumnContent =
-                  '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;"><div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"><p>Column 1</p></div><div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"><p>Column 2</p></div></div>';
-                editor?.commands.insertContent(twoColumnContent);
-              }}
-              title="2 Columns"
-            >
-              <Columns2 className="h-4 w-4" />
-            </MenuButton>
-            <MenuButton
-              onClick={() => {
-                const threeColumnContent =
-                  '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin: 1rem 0;"><div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"><p>Column 1</p></div><div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"><p>Column 2</p></div><div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"><p>Column 3</p></div></div>';
-                editor?.commands.insertContent(threeColumnContent);
-              }}
-              title="3 Columns"
-            >
-              <Columns3 className="h-4 w-4" />
-            </MenuButton>
-            <MenuButton
-              onClick={() => {
-                const fourColumnContent =
-                  '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1rem; margin: 1rem 0;"><div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"><p>Column 1</p></div><div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"><p>Column 2</p></div><div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"><p>Column 3</p></div><div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"><p>Column 4</p></div></div>';
-                editor?.commands.insertContent(fourColumnContent);
-              }}
-              title="4 Columns"
-            >
-              <Columns4 className="h-4 w-4" />
             </MenuButton>
           </div>
 
@@ -877,26 +815,6 @@ const Tiptap = () => {
           >
             <div className="flex gap-1 items-center">
               <MenuButton
-                onClick={() => editor.chain().focus().addColumnBefore().run()}
-                title="Add Column Before"
-                className="h-8 w-auto px-2"
-              >
-                <div className="flex items-center gap-1">
-                  <Plus className="h-3 w-3" />
-                  <span className="text-xs">← Col</span>
-                </div>
-              </MenuButton>
-              <MenuButton
-                onClick={() => editor.chain().focus().addColumnAfter().run()}
-                title="Add Column After"
-                className="h-8 w-auto px-2"
-              >
-                <div className="flex items-center gap-1">
-                  <Plus className="h-3 w-3" />
-                  <span className="text-xs">Col →</span>
-                </div>
-              </MenuButton>
-              <MenuButton
                 onClick={() => editor.chain().focus().addRowBefore().run()}
                 title="Add Row Before"
                 className="h-8 w-auto px-2"
@@ -917,16 +835,7 @@ const Tiptap = () => {
                 </div>
               </MenuButton>
               <div className="h-6 w-px bg-gray-300 mx-1" />
-              <MenuButton
-                onClick={() => editor.chain().focus().deleteColumn().run()}
-                title="Delete Column"
-                className="text-red-600 hover:bg-red-50 h-8 w-auto px-2"
-              >
-                <div className="flex items-center gap-1">
-                  <Minus className="h-3 w-3" />
-                  <span className="text-xs">Col</span>
-                </div>
-              </MenuButton>
+
               <MenuButton
                 onClick={() => editor.chain().focus().deleteRow().run()}
                 title="Delete Row"

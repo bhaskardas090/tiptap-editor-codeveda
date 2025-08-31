@@ -96,7 +96,7 @@ const Tiptap = () => {
         <li>Block quotes</li>
         <li>Code blocks with syntax highlighting</li>
         <li>File uploads for images and videos</li>
-        <li>Column layouts</li>
+
         <li>And much more...</li>
       </ul>
       <p>Select text to see formatting options in the bubble menu.</p>

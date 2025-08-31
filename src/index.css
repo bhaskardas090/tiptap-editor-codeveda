@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "@/styles/tiptap.css";
+@import "@/styles/tiptap.scss";
 @import "@/styles/_variables.scss";
 @import "@/components/tiptap-ui-primitive/tooltip/tooltip.scss";
 
