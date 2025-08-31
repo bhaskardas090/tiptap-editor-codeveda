@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { NodeViewWrapper, NodeViewContent } from "@tiptap/react";
+import { Trash2 } from "lucide-react";
 
 export default function TabsComponent({
   node,
@@ -59,6 +60,15 @@ export default function TabsComponent({
     }
   };
 
+  const handleDeleteTabs = () => {
+    if (
+      editor &&
+      confirm("Are you sure you want to delete this tabs component?")
+    ) {
+      editor.chain().focus().deleteNode("tabs").run();
+    }
+  };
+
   const getTabTitle = (index: number) => {
     return tabItems[index]?.attrs?.title || `Tab ${index + 1}`;
   };
@@ -70,7 +80,7 @@ export default function TabsComponent({
     >
       {/* Tab Headers */}
       <div className="tabs-header bg-gray-50 border-b border-gray-200">
-        <div className="flex items-center">
+        <div className="flex items-center justify-between">
           <div className="flex flex-1 overflow-x-auto">
             {tabItems.map((_: any, index: number) => (
               <button
@@ -112,6 +122,17 @@ export default function TabsComponent({
               </button>
             ))}
           </div>
+
+          {/* Delete Button */}
+          {isEditable && (
+            <button
+              onClick={handleDeleteTabs}
+              className="px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors"
+              title="Delete tabs"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </div>
 

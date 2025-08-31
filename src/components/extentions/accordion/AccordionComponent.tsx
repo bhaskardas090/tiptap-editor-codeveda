@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { NodeViewWrapper, NodeViewContent } from "@tiptap/react";
+import { Trash2 } from "lucide-react";
 
 export default function AccordionComponent({
   node,
@@ -43,6 +44,12 @@ export default function AccordionComponent({
     updateAttributes({ title, open: newOpen });
   };
 
+  const handleDeleteAccordion = () => {
+    if (editor && confirm("Are you sure you want to delete this accordion?")) {
+      editor.chain().focus().deleteNode("accordion").run();
+    }
+  };
+
   return (
     <NodeViewWrapper className="accordion border border-gray-200 rounded-lg mb-3 overflow-hidden">
       {/* Accordion Header */}
@@ -61,7 +68,9 @@ export default function AccordionComponent({
             title={open ? "Collapse" : "Expand"}
           >
             <span
-              className={`cursor-pointer transition-transform duration-200 ${open ? "rotate-90" : ""}`}
+              className={`cursor-pointer transition-transform duration-200 ${
+                open ? "rotate-90" : ""
+              }`}
             >
               ▶
             </span>
@@ -89,11 +98,29 @@ export default function AccordionComponent({
                     }
                   : undefined
               }
-              className={`font-medium text-gray-800 flex-1 py-1 ${isEditable ? "cursor-text hover:text-blue-600" : "cursor-pointer"}`}
+              className={`font-medium text-gray-800 flex-1 py-1 ${
+                isEditable
+                  ? "cursor-text hover:text-blue-600"
+                  : "cursor-pointer"
+              }`}
               title={isEditable ? "Click to edit title" : undefined}
             >
               {title}
             </div>
+          )}
+
+          {/* Delete Button */}
+          {isEditable && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteAccordion();
+              }}
+              className="px-2 py-1 text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors rounded"
+              title="Delete accordion"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
           )}
         </div>
       </div>

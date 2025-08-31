@@ -21,6 +21,7 @@ import {
   AccordionItem,
 } from "./components/extentions/accordion/Accoridion";
 import { Tabs, TabItem } from "./components/extentions/tabs/Tabs";
+import { Iframe } from "./components/extentions/iframe";
 import {
   Tooltip,
   TooltipTrigger,
@@ -54,6 +55,7 @@ import {
   Minus,
   Trash2,
   PanelTopOpen,
+  Frame,
 } from "lucide-react";
 
 import css from "highlight.js/lib/languages/css";
@@ -204,6 +206,7 @@ const Tiptap = () => {
       AccordionItem,
       Tabs,
       TabItem,
+      Iframe,
     ],
     content: `
       <p>Welcome to the Advanced Tiptap Editor! This editor includes all the features you requested. Try them out!</p>
@@ -215,6 +218,7 @@ const Tiptap = () => {
         <li>Block quotes</li>
         <li>Code blocks with syntax highlighting</li>
         <li>File uploads for images and videos</li>
+        <li>Iframe embeds (CodeSandbox, YouTube, etc.)</li>
 
         <li>And much more...</li>
       </ul>
@@ -625,6 +629,31 @@ const Tiptap = () => {
               title="Insert 6 Tabs"
             >
               <span className="text-xs font-mono">6T</span>
+            </MenuButton>
+          </div>
+
+          {/* Iframe */}
+          <div className="flex gap-1 border-r border-gray-300 pr-2">
+            <MenuButton
+              onClick={() => {
+                const url = prompt(
+                  "Enter the URL for your iframe:",
+                  "https://example.com/embed"
+                );
+                if (url) {
+                  (editor.chain().focus() as any)
+                    .insertIframe({
+                      src: url,
+                      width: "100%",
+                      height: "500px",
+                      title: "Embedded Content",
+                    })
+                    .run();
+                }
+              }}
+              title="Insert iframe"
+            >
+              <Frame className="h-4 w-4" />
             </MenuButton>
           </div>
         </div>

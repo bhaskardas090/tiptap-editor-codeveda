@@ -21,6 +21,7 @@ import {
   AccordionItem,
 } from "@/components/extentions/accordion/Accoridion";
 import { Tabs, TabItem } from "@/components/extentions/tabs/Tabs";
+import { Iframe } from "@/components/extentions/iframe";
 
 const lowlight = createLowlight();
 import("highlight.js/lib/languages/javascript").then((js) =>
@@ -85,6 +86,7 @@ const Tiptap = () => {
       AccordionItem,
       Tabs,
       TabItem,
+      Iframe,
     ],
     content: `
       <p>Welcome to the Advanced Tiptap Viewer! This viewer includes all the features you requested. Try them out!</p>
@@ -96,6 +98,7 @@ const Tiptap = () => {
         <li>Block quotes</li>
         <li>Code blocks with syntax highlighting</li>
         <li>File uploads for images and videos</li>
+        <li>Iframe embeds (CodeSandbox, YouTube, etc.)</li>
 
         <li>And much more...</li>
       </ul>
