@@ -1,47 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import { Table } from "@tiptap/extension-table";
-import TableRow from "@tiptap/extension-table-row";
-import TableCell from "@tiptap/extension-table-cell";
-import TableHeader from "@tiptap/extension-table-header";
-import Image from "@tiptap/extension-image";
-import Link from "@tiptap/extension-link";
-import Underline from "@tiptap/extension-underline";
-import Strike from "@tiptap/extension-strike";
-import { TextStyle } from "@tiptap/extension-text-style";
-import Color from "@tiptap/extension-color";
-import Highlight from "@tiptap/extension-highlight";
-import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
-import Blockquote from "@tiptap/extension-blockquote";
-import HorizontalRule from "@tiptap/extension-horizontal-rule";
-import { createLowlight } from "lowlight";
 import {
+  StarterKitExtension,
+  TableExtension,
+  TableRow,
+  TableHeader,
+  TableCell,
+  ImageExtension,
+  LinkExtension,
+  UnderlineExtension,
+  StrikeExtension,
+  TextStyleExtension,
+  ColorExtension,
+  HighlightExtension,
+  CodeBlockExtension,
+  BlockquoteExtension,
+  HorizontalRuleExtension,
   Accordion,
   AccordionItem,
-} from "@/components/extentions/accordion/Accoridion";
-import { Tabs, TabItem } from "@/components/extentions/tabs/Tabs";
-import { Iframe } from "@/components/extentions/iframe";
-
-const lowlight = createLowlight();
-import("highlight.js/lib/languages/javascript").then((js) =>
-  lowlight.register("javascript", js.default)
-);
-import("highlight.js/lib/languages/typescript").then((ts) =>
-  lowlight.register("typescript", ts.default)
-);
-import("highlight.js/lib/languages/python").then((py) =>
-  lowlight.register("python", py.default)
-);
-import("highlight.js/lib/languages/css").then((css) =>
-  lowlight.register("css", css.default)
-);
-import("highlight.js/lib/languages/xml").then((xml) =>
-  lowlight.register("html", xml.default)
-);
-import("highlight.js/lib/languages/json").then((json) =>
-  lowlight.register("json", json.default)
-);
+  Tabs,
+  TabItem,
+  Iframe,
+  Video,
+} from "./components/extentions";
 
 const Tiptap = () => {
   const [, forceUpdate] = useState({});
@@ -49,60 +30,64 @@ const Tiptap = () => {
 
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({
-        codeBlock: false,
-      }),
-      Table.configure({
-        resizable: true,
-      }),
+      StarterKitExtension,
+      TableExtension,
       TableRow,
       TableHeader,
       TableCell,
-      Image.configure({
+      ImageExtension.configure({
         inline: false,
         allowBase64: true,
       }),
-      Link.configure({
+      LinkExtension.configure({
         openOnClick: false,
         autolink: true,
         defaultProtocol: "https",
       }),
-      Underline,
-      Strike,
-      TextStyle,
-      Color.configure({
+      UnderlineExtension,
+      StrikeExtension,
+      TextStyleExtension,
+      ColorExtension.configure({
         types: ["textStyle"],
       }),
-      Highlight.configure({
+      HighlightExtension.configure({
         multicolor: true,
       }),
-      CodeBlockLowlight.configure({
-        lowlight,
-        defaultLanguage: "javascript",
-      }),
-      Blockquote,
-      HorizontalRule,
+      CodeBlockExtension,
+      BlockquoteExtension,
+      HorizontalRuleExtension,
       Accordion,
       AccordionItem,
       Tabs,
       TabItem,
       Iframe,
+      Video.configure({
+        inline: false,
+        allowBase64: true,
+        HTMLAttributes: {
+          class: "max-w-full h-auto rounded-lg shadow-sm",
+        },
+      }),
     ],
     content: `
-      <p>Welcome to the Advanced Tiptap Viewer! This viewer includes all the features you requested. Try them out!</p>
+      <p>Welcome to the Advanced Tiptap Editor! This editor includes all the features you requested. Try them out!</p>
+      <div data-title="Output" data-open="false" data-type="accordion">
+       <div data-type="accordion-item">
+        <img class="max-w-full h-auto rounded-lg shadow-sm" src="https://firebasestorage.googleapis.com/v0/b/codeveda-dev.firebasestorage.app/o/images%2F1756639598586_img1.png?alt=media&amp;token=8b789260-df87-4ad7-ae5a-65c64f9850b2">
+       </div>
+      </div>
       <p>You can use:</p>
       <ul>
-        <li>Headings (H1, H2, H3)</li>
-        <li>Lists (bullet and numbered)</li>
-        <li>Tables</li>
-        <li>Block quotes</li>
-        <li>Code blocks with syntax highlighting</li>
-        <li>File uploads for images and videos</li>
-        <li>Iframe embeds (CodeSandbox, YouTube, etc.)</li>
-
-        <li>And much more...</li>
+        <li><p>Headings (H1, H2, H3)</p></li>
+        <li><p>Lists (bullet and numbered)</p></li>
+        <li><p>Tables</p></li>
+        <li><p>Block quotes</p></li>
+        <li><p>Code blocks with syntax highlighting</p></li>
+        <li><p>File uploads for images and videos</p></li>
+        <li><p>Iframe embeds (CodeSandbox, YouTube, etc.)</p></li>
+        <li><p>And much more...</p></li>
       </ul>
-      <p>Select text to see formatting options in the bubble menu.</p>
+      <p>Place your cursor at an empty line to see the floating menu, or select text to see formatting options in the bubble menu.</p>
     `,
     editable: !isReadOnly,
     editorProps: {
@@ -130,7 +115,7 @@ const Tiptap = () => {
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-4">
+    <div className="w-full max-w-[710px] mx-auto p-4">
       <div className="relative border border-gray-300 border-t-1 rounded-t-lg rounded-b-lg min-h-[400px]">
         <EditorContent editor={editor} className="tiptap-editor" />
       </div>

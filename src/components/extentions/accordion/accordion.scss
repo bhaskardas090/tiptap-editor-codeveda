@@ -1,0 +1,405 @@
+/* Accordion Extension Styles */
+
+/* Toggle/Collapsible Items using details/summary */
+.tiptap-editor .toggle-details {
+  margin: 1rem 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+.tiptap-editor .toggle-summary {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background-color: #f8fafc;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.2s ease;
+  list-style: none; /* Remove default browser arrow */
+}
+
+.tiptap-editor .toggle-summary::-webkit-details-marker {
+  display: none; /* Remove default browser arrow in webkit */
+}
+
+.tiptap-editor .toggle-summary:hover {
+  background-color: #f1f5f9;
+}
+
+.tiptap-editor .toggle-arrow {
+  display: inline-block;
+  margin-right: 0.5rem;
+  font-size: 0.75rem;
+  transition: transform 0.2s ease;
+  color: #6b7280;
+  min-width: 12px;
+}
+
+.tiptap-editor .toggle-details[open] .toggle-arrow {
+  transform: rotate(90deg);
+}
+
+.tiptap-editor .toggle-title {
+  font-weight: 600;
+  color: #374151;
+  outline: none;
+  flex: 1;
+}
+
+.tiptap-editor .toggle-title:focus {
+  color: #1f2937;
+  background-color: rgba(59, 130, 246, 0.1);
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.25rem;
+}
+
+.tiptap-editor .toggle-body {
+  padding: 1rem;
+  background-color: #ffffff;
+}
+
+.tiptap-editor .toggle-details:not([open]) .toggle-summary {
+  border-bottom: none;
+}
+
+/* Smooth animation for opening/closing */
+.tiptap-editor .toggle-details .toggle-body {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Interactive Toggle Extension Styles */
+.tiptap-editor .toggle-container {
+  margin: 1rem 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+.tiptap-editor .toggle-header-interactive {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background-color: #f8fafc;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.2s ease;
+  gap: 0.5rem;
+}
+
+.tiptap-editor .toggle-header-interactive:hover {
+  background-color: #f1f5f9;
+}
+
+.tiptap-editor .toggle-arrow-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.tiptap-editor .toggle-arrow-btn svg {
+  transition: transform 0.2s ease;
+  transform: rotate(0deg);
+}
+
+.tiptap-editor .toggle-arrow-btn:hover {
+  color: #374151;
+  background-color: #e5e7eb;
+}
+
+.tiptap-editor .toggle-title-display {
+  font-weight: 600;
+  color: #374151;
+  flex: 1;
+  cursor: text;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s ease;
+}
+
+.tiptap-editor .toggle-title-display:hover {
+  background-color: #f3f4f6;
+}
+
+.tiptap-editor .toggle-title-input {
+  font-weight: 600;
+  color: #374151;
+  flex: 1;
+  background: #ffffff;
+  border: 1px solid #3b82f6;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  outline: none;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.tiptap-editor .toggle-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  border-radius: 0.25rem;
+  font-size: 16px;
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+.tiptap-editor .toggle-delete-btn:hover {
+  color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.tiptap-editor .toggle-content-interactive {
+  background-color: #ffffff;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.tiptap-editor .toggle-content-interactive.closed {
+  border-bottom: none;
+}
+
+.tiptap-editor
+  .toggle-container:has(.toggle-content-interactive.closed)
+  .toggle-header-interactive {
+  border-bottom: none;
+}
+
+/* Accordion styles */
+.tiptap-editor .accordion-header {
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  user-select: none;
+}
+
+.tiptap-editor .accordion-header:hover {
+  background-color: #f1f5f9;
+}
+
+.tiptap-editor .accordion-arrow-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.tiptap-editor .accordion-arrow {
+  font-size: 0.75rem;
+  color: #6b7280;
+  transition: transform 0.2s ease;
+  display: inline-block;
+  width: 16px;
+}
+
+.tiptap-editor .accordion-title-display {
+  font-weight: 600;
+  color: #374151;
+  flex: 1;
+  cursor: text;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s ease;
+}
+
+.tiptap-editor .accordion-title-display:hover {
+  background-color: #f3f4f6;
+}
+
+.tiptap-editor .accordion-title-input {
+  font-weight: 600;
+  color: #374151;
+  flex: 1;
+  background: #ffffff;
+  border: 1px solid #3b82f6;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  outline: none;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.tiptap-editor .accordion-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  border-radius: 0.25rem;
+  font-size: 16px;
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+.tiptap-editor .accordion-delete-btn:hover {
+  color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.tiptap-editor .accordion-content {
+  background-color: #ffffff;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.tiptap-editor .accordion-content.closed {
+  border-bottom: none;
+}
+
+.tiptap-editor
+  .accordion-wrapper:has(.accordion-content.closed)
+  .accordion-header {
+  border-bottom: none;
+}
+
+.tiptap-editor .accordion-content-editable {
+  outline: none;
+  min-height: 40px;
+}
+
+.tiptap-editor .accordion-content-editable p {
+  margin: 0.5rem 0;
+}
+
+.tiptap-editor .accordion-content-editable:first-child p:first-child {
+  margin-top: 0;
+}
+
+.tiptap-editor .accordion-content-editable:last-child p:last-child {
+  margin-bottom: 0;
+}
+
+/* Simple Accordion Styles */
+.tiptap-editor .simple-accordion-wrapper {
+  margin: 1rem 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+.tiptap-editor .simple-accordion-header {
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  user-select: none;
+  position: relative;
+  z-index: 10;
+}
+
+.tiptap-editor .simple-accordion-header:hover {
+  background-color: #f1f5f9;
+}
+
+.tiptap-editor .simple-accordion-arrow {
+  font-size: 0.75rem;
+  color: #6b7280;
+  transition: transform 0.2s ease;
+  display: inline-block;
+  width: 16px;
+}
+
+.tiptap-editor .simple-accordion-title {
+  font-weight: 600;
+  color: #374151;
+  flex: 1;
+}
+
+.tiptap-editor .simple-accordion-content {
+  padding: 1rem;
+  background-color: #ffffff;
+  border-top: none;
+  transition: all 0.3s ease;
+}
+
+/* Working Accordion - Ultra Simple */
+.tiptap-editor .working-accordion {
+  margin: 1rem 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+.tiptap-editor .working-accordion summary {
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e5e7eb;
+  font-weight: 600;
+  color: #374151;
+  list-style: none;
+  user-select: none;
+}
+
+.tiptap-editor .working-accordion summary:hover {
+  background-color: #f1f5f9;
+}
+
+.tiptap-editor .working-accordion summary::-webkit-details-marker {
+  display: none;
+}
+
+.tiptap-editor .working-accordion summary::before {
+  content: "▶";
+  margin-right: 0.5rem;
+  transition: transform 0.2s ease;
+  display: inline-block;
+}
+
+.tiptap-editor .working-accordion[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.tiptap-editor .working-accordion-content {
+  padding: 1rem;
+  background-color: #ffffff;
+}

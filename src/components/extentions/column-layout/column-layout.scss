@@ -1,0 +1,45 @@
+/* Column Layout Extension Styles */
+
+.tiptap-editor div[data-type="column-layout"] {
+  display: grid;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.tiptap-editor div[data-type="column-layout"][data-columns="2"] {
+  grid-template-columns: 1fr 1fr;
+}
+
+.tiptap-editor div[data-type="column-layout"][data-columns="3"] {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.tiptap-editor div[data-type="column-layout"][data-columns="4"] {
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.tiptap-editor div[data-type="column"] {
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: #f9fafb;
+  min-height: 100px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tiptap-editor div[data-type="column-layout"][data-columns="3"],
+  .tiptap-editor div[data-type="column-layout"][data-columns="4"] {
+    grid-template-columns: 1fr;
+  }
+
+  .tiptap-editor div[data-type="column-layout"][data-columns="2"] {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .tiptap-editor div[data-type="column-layout"][data-columns="4"] {
+    grid-template-columns: 1fr 1fr;
+  }
+}

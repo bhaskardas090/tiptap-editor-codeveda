@@ -1,0 +1,122 @@
+/* Core Elements Extension Styles */
+
+/* Headings */
+.tiptap-editor h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 2.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  color: #1f2937;
+}
+
+.tiptap-editor h2 {
+  font-size: 1.875rem;
+  font-weight: 600;
+  line-height: 2.25rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #1f2937;
+}
+
+.tiptap-editor h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 2rem;
+  margin-top: 1.25rem;
+  margin-bottom: 0.75rem;
+  color: #1f2937;
+}
+
+/* Paragraphs */
+.tiptap-editor p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  color: #374151;
+}
+
+/* Lists */
+.tiptap-editor ul {
+  list-style-type: disc;
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.tiptap-editor ol {
+  list-style-type: decimal;
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.tiptap-editor li {
+  margin-bottom: 0.25rem;
+  line-height: 1.6;
+}
+
+/* Block Quote */
+.tiptap-editor blockquote {
+  border-left: 4px solid #3b82f6;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  font-style: italic;
+  color: #6b7280;
+  background-color: #f8fafc;
+  padding: 1rem;
+  border-radius: 0.375rem;
+}
+
+/* Horizontal Rule */
+.tiptap-editor hr {
+  border: none;
+  border-top: 2px solid #e5e7eb;
+  margin: 2rem 0;
+}
+
+/* Code */
+.tiptap-editor code {
+  background-color: #f3f4f6;
+  color: #ef4444;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  font-size: 0.875em;
+}
+
+/* Links */
+.tiptap-editor a {
+  color: #3b82f6;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.tiptap-editor a:hover {
+  color: #1d4ed8;
+}
+
+/* Selection */
+.tiptap-editor .ProseMirror-selectednode {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Focus */
+.tiptap-editor .ProseMirror-focused {
+  outline: none;
+}
+
+/* Empty state styling */
+.tiptap-editor .ProseMirror:empty::before {
+  content: "Start typing...";
+  color: #9ca3af;
+  pointer-events: none;
+  position: absolute;
+}
+
+/* Placeholder styling for specific nodes */
+.tiptap-editor .ProseMirror p.is-editor-empty:first-child::before {
+  content: "Start typing...";
+  color: #9ca3af;
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
