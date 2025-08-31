@@ -322,7 +322,7 @@ const Tiptap: React.FC<TiptapProps> = ({ onImageUpload, onVideoUpload }) => {
   return (
     <div
       className={`w-full ${
-        isReadOnly ? "max-w-[710px]" : "max-w-6xl"
+        isReadOnly ? "max-w-[720px]" : "max-w-6xl"
       } mx-auto p-4`}
     >
       {/* Debug Info - Remove this later */}

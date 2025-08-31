@@ -115,7 +115,7 @@ const Tiptap = () => {
   }
 
   return (
-    <div className="w-full max-w-[710px] mx-auto p-4">
+    <div className="w-full max-w-[720px] mx-auto p-4">
       <div className="relative border border-gray-300 border-t-1 rounded-t-lg rounded-b-lg min-h-[400px]">
         <EditorContent editor={editor} className="tiptap-editor" />
       </div>
