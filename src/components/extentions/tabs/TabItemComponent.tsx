@@ -1,9 +1,7 @@
-import React from "react";
 import { NodeViewWrapper, NodeViewContent } from "@tiptap/react";
 
 export default function TabItemComponent({
   node,
-  updateAttributes,
 }: {
   node: any;
   updateAttributes: (attrs: any) => void;

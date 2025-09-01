@@ -32,7 +32,7 @@ const Tiptap = ({
   editorContent?: string;
 }) => {
   const [, forceUpdate] = useState({});
-  const [isReadOnly, setIsReadOnly] = useState(true);
+  const [isReadOnly] = useState(true);
 
   const editor = useEditor({
     extensions: [

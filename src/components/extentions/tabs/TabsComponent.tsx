@@ -17,7 +17,6 @@ export default function TabsComponent({
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   const tabItems = node.content?.content || [];
-  const tabCount = node.attrs?.tabCount || tabItems.length;
   const isEditable = editor?.isEditable ?? false;
 
   useEffect(() => {

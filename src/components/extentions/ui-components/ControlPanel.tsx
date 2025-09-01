@@ -11,7 +11,6 @@ interface ControlPanelProps {
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
-  editor,
   isReadOnly,
   setIsReadOnly,
   onLogContent,

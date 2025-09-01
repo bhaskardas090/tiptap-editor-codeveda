@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Editor } from "@tiptap/react";
 import MenuButton from "./MenuButton";
-import ColorPicker from "./ColorPicker";
 import {
   Heading1,
   Heading2,
@@ -13,17 +12,7 @@ import {
   Image as ImageIcon,
   Video as VideoIcon,
   FileText,
-  Bold,
-  Italic,
-  Underline as UnderlineIcon,
-  Strikethrough,
-  Terminal,
-  Link as LinkIcon,
-  Palette,
-  Type,
-  Plus,
   Minus,
-  Trash2,
   PanelTopOpen,
   Frame,
   Code,
@@ -59,23 +48,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   handleImageUrlInsert,
   imageUploadFunction,
 }) => {
-  const [showTextColorPicker, setShowTextColorPicker] = useState(false);
-  const [showBgColorPicker, setShowBgColorPicker] = useState(false);
-  const [linkUrl, setLinkUrl] = useState("");
-  const [showLinkInput, setShowLinkInput] = useState(false);
-
-  const handleSetLink = () => {
-    if (linkUrl) {
-      editor
-        .chain()
-        .focus()
-        .extendMarkRange("link")
-        .setLink({ href: linkUrl })
-        .run();
-      setLinkUrl("");
-      setShowLinkInput(false);
-    }
-  };
+  // Intentionally minimal state; remove unused link/color states to satisfy linter
 
   if (isReadOnly) return null;
 
