@@ -28,17 +28,20 @@ import {
   TableMenu,
   DebugInfo,
   ControlPanel,
-  createImageUploadService,
-  createVideoUploadService,
   logEditorContent,
 } from "./components/extentions";
 
 interface TiptapProps {
   onImageUpload?: (file: File) => Promise<string>; // Function to upload image and return URL
   onVideoUpload?: (file: File) => Promise<string>; // Function to upload video and return URL
+  setEditorContent?: (content: { html: string; json: any }) => void;
 }
 
-const Tiptap: React.FC<TiptapProps> = ({ onImageUpload, onVideoUpload }) => {
+const Tiptap: React.FC<TiptapProps> = ({
+  onImageUpload,
+  onVideoUpload,
+  setEditorContent,
+}) => {
   const [imageUrl, setImageUrl] = useState("");
   const [showImageInput, setShowImageInput] = useState(false);
   const [, forceUpdate] = useState({});
@@ -106,10 +109,12 @@ const Tiptap: React.FC<TiptapProps> = ({ onImageUpload, onVideoUpload }) => {
     },
     onUpdate: () => {
       // Force component re-render when editor content changes
+      setEditorContent?.({ html: editor.getHTML(), json: editor.getJSON() });
       forceUpdate({});
     },
     onSelectionUpdate: () => {
       // Force component re-render when selection changes
+      setEditorContent?.({ html: editor.getHTML(), json: editor.getJSON() });
       forceUpdate({});
     },
   });
@@ -320,11 +325,7 @@ const Tiptap: React.FC<TiptapProps> = ({ onImageUpload, onVideoUpload }) => {
   }
 
   return (
-    <div
-      className={`w-full ${
-        isReadOnly ? "max-w-[720px]" : "max-w-6xl"
-      } mx-auto p-4`}
-    >
+    <div className="w-full max-w-6xl mx-auto p-4">
       {/* Debug Info - Remove this later */}
       {editor && <DebugInfo editor={editor} />}
 
