@@ -1,69 +1,273 @@
-# React + TypeScript + Vite
+# Tiptap Editor Codeveda
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A powerful, feature-rich rich text editor built with Tiptap and React. This package provides both an editor and viewer component with extensive functionality including tables, images, videos, code blocks, accordions, tabs, iframes, and more.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Rich Text Editing**: Bold, italic, underline, strikethrough, headings, lists
+- **Tables**: Full table support with add/delete rows and columns
+- **Media Support**: Image and video uploads with preview
+- **Code Blocks**: Syntax-highlighted code blocks with multiple language support
+- **Interactive Components**: Accordions, tabs, iframes for CodeSandbox/YouTube
+- **Customizable**: Extensible with custom extensions and styling
+- **TypeScript**: Full TypeScript support with type definitions
+- **Read-only Mode**: Viewer component for displaying content
 
-## Expanding the ESLint configuration
+## 📦 Installation
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install tiptap-editor-codeveda
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🔧 Basic Usage
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Simple Editor
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```tsx
+import { TiptapEditor, useEditorContent } from "tiptap-editor-codeveda";
+
+function MyApp() {
+  const { content, html, json, setContent } = useEditorContent();
+
+  return (
+    <div>
+      <TiptapEditor setEditorContent={setContent} />
+
+      {/* Display content */}
+      <div>
+        <h3>HTML Output:</h3>
+        <pre>{html}</pre>
+      </div>
+    </div>
+  );
+}
 ```
+
+### With File Upload Support
+
+```tsx
+import { TiptapEditor, useEditorContent } from "tiptap-editor-codeveda";
+
+function EditorWithUploads() {
+  const { content, setContent } = useEditorContent();
+
+  const handleImageUpload = async (file: File): Promise<string> => {
+    // Your image upload logic here
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await fetch("/api/upload/image", {
+      method: "POST",
+      body: formData,
+    });
+
+    const { imageUrl } = await response.json();
+    return imageUrl;
+  };
+
+  const handleVideoUpload = async (file: File): Promise<string> => {
+    // Your video upload logic here
+    const formData = new FormData();
+    formData.append("video", file);
+
+    const response = await fetch("/api/upload/video", {
+      method: "POST",
+      body: formData,
+    });
+
+    const { videoUrl } = await response.json();
+    return videoUrl;
+  };
+
+  return (
+    <TiptapEditor
+      setEditorContent={setContent}
+      onImageUpload={handleImageUpload}
+      onVideoUpload={handleVideoUpload}
+    />
+  );
+}
+```
+
+### Read-only Viewer
+
+```tsx
+import { TiptapViewer } from "tiptap-editor-codeveda";
+
+function ContentViewer({ htmlContent }: { htmlContent: string }) {
+  return (
+    <TiptapViewer editorContent={htmlContent} styles="custom-viewer-styles" />
+  );
+}
+```
+
+## 📖 API Reference
+
+### TiptapEditor Props
+
+| Prop               | Type                                      | Description                                |
+| ------------------ | ----------------------------------------- | ------------------------------------------ |
+| `setEditorContent` | `(content: EditorContentPayload) => void` | Callback fired when editor content changes |
+| `onImageUpload`    | `(file: File) => Promise<string>`         | Optional image upload handler              |
+| `onVideoUpload`    | `(file: File) => Promise<string>`         | Optional video upload handler              |
+
+### TiptapViewer Props
+
+| Prop            | Type     | Description                      |
+| --------------- | -------- | -------------------------------- |
+| `editorContent` | `string` | HTML content to display          |
+| `styles`        | `string` | Optional CSS classes for styling |
+
+### useEditorContent Hook
+
+Returns an object with:
+
+```tsx
+{
+  content: EditorContentPayload;  // Full content object
+  html: string;                   // HTML string
+  json: any;                      // JSON representation
+  setContent: (content: EditorContentPayload) => void; // Update function
+}
+```
+
+### EditorContentPayload Type
+
+```tsx
+type EditorContentPayload = {
+  html: string;
+  json: any; // ProseMirror JSON document
+};
+```
+
+## 🎨 Styling
+
+The editor comes with default Tailwind CSS styles. You can customize the appearance by:
+
+1. **Override CSS classes**: The editor uses standard prose classes
+2. **Custom styles**: Pass custom CSS classes to the viewer
+3. **Theme customization**: Modify the default color scheme
+
+```css
+/* Custom editor styles */
+.tiptap-editor {
+  /* Your custom styles */
+}
+
+.tiptap-editor .ProseMirror {
+  /* Editor content area */
+}
+```
+
+## 🔌 Available Features
+
+### Text Formatting
+
+- **Headings**: H1, H2, H3
+- **Text styles**: Bold, italic, underline, strikethrough
+- **Lists**: Bullet points and numbered lists
+- **Quotes**: Block quotes
+- **Links**: Clickable links
+
+### Advanced Components
+
+- **Tables**: Resizable tables with header support
+- **Code blocks**: Syntax highlighting for multiple languages
+- **Accordions**: Collapsible content sections
+- **Tabs**: Tabbed content organization
+- **Iframes**: Embed CodeSandbox, YouTube, etc.
+
+### Media
+
+- **Images**: Upload or URL-based images with preview
+- **Videos**: Upload or embed videos
+
+## 🛠️ Examples
+
+### Firebase Integration
+
+```tsx
+import { initializeApp } from "firebase/app";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
+
+const uploadToFirebase = async (
+  file: File,
+  folder: string
+): Promise<string> => {
+  const storageRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
+  const snapshot = await uploadBytes(storageRef, file);
+  return await getDownloadURL(snapshot.ref);
+};
+
+function FirebaseEditor() {
+  const { setContent } = useEditorContent();
+
+  return (
+    <TiptapEditor
+      setEditorContent={setContent}
+      onImageUpload={(file) => uploadToFirebase(file, "images")}
+      onVideoUpload={(file) => uploadToFirebase(file, "videos")}
+    />
+  );
+}
+```
+
+### Content Management
+
+```tsx
+import { useState, useEffect } from "react";
+import {
+  TiptapEditor,
+  TiptapViewer,
+  useEditorContent,
+} from "tiptap-editor-codeveda";
+
+function ContentManager() {
+  const [isEditing, setIsEditing] = useState(false);
+  const [savedContent, setSavedContent] = useState("");
+  const { content, setContent } = useEditorContent();
+
+  const saveContent = () => {
+    setSavedContent(content.html);
+    setIsEditing(false);
+    // Save to your backend
+  };
+
+  return (
+    <div>
+      {isEditing ? (
+        <div>
+          <TiptapEditor setEditorContent={setContent} />
+          <button onClick={saveContent}>Save</button>
+          <button onClick={() => setIsEditing(false)}>Cancel</button>
+        </div>
+      ) : (
+        <div>
+          <TiptapViewer editorContent={savedContent} />
+          <button onClick={() => setIsEditing(true)}>Edit</button>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+MIT License - feel free to use this in your projects.
+
+## 🐛 Issues
+
+If you encounter any issues, please report them on the GitHub repository.
+
+---
+
+Built with ❤️ using [Tiptap](https://tiptap.dev/) and React.
