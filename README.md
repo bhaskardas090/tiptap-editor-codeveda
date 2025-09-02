@@ -15,6 +15,8 @@ A powerful, feature-rich rich text editor built with Tiptap and React. This pack
 
 # 📸 Screenshots
 
+**If you are checking it on npm page and images not showing please check on github**
+
 ### Main Toolbar, Debug Panel and Action Buttons
 
 ![Main Toolbar, Debug Panel and Action Buttons](src/assets/menu-debug-actions.png)

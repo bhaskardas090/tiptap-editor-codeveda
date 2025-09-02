@@ -3,6 +3,28 @@
   "private": false,
   "version": "0.1.3",
   "type": "module",
+  "description": "A powerful, feature-rich WYSIWYG editor built with Tiptap, React, and TypeScript",
+  "keywords": [
+    "tiptap",
+    "editor",
+    "wysiwyg",
+    "react",
+    "typescript",
+    "rich-text",
+    "firebase",
+    "table",
+    "media-upload"
+  ],
+  "author": "Codeveda Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bhaskardas090/tiptap-editor-codeveda"
+  },
+  "homepage": "https://github.com/bhaskardas090/tiptap-editor-codeveda",
+  "bugs": {
+    "url": "https://github.com/bhaskardas090/tiptap-editor-codeveda/issues"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
