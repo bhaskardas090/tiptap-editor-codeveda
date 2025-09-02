@@ -1,76 +1,70 @@
-/* Code Block Extension Styles */
+.tiptap {
+  pre {
+    background: var(--black);
+    border-radius: 0.5rem;
+    color: var(--white);
+    font-family: "JetBrainsMono", monospace;
+    margin: 1.5rem 0;
+    padding: 0.75rem 1rem;
 
-.tiptap-editor pre {
-  background-color: #1f2937;
-  color: #f9fafb;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin: 1rem 0;
-  overflow-x: auto;
-  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  border: 1px solid #374151;
-}
+    code {
+      background: none;
+      color: inherit;
+      font-size: 0.8rem;
+      padding: 0;
+    }
 
-.tiptap-editor pre code {
-  background: none;
-  color: inherit;
-  padding: 0;
-  border-radius: 0;
-  font-size: inherit;
-  font-family: inherit;
-}
+    /* Code styling */
+    .hljs-comment,
+    .hljs-quote {
+      color: #616161;
+    }
 
-.tiptap-editor code {
-  background-color: #f3f4f6;
-  color: #1f2937;
-  padding: 0.125rem 0.25rem;
-  border-radius: 0.25rem;
-  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
-  font-size: 0.875em;
-  border: 1px solid #e5e7eb;
-}
+    .hljs-variable,
+    .hljs-template-variable,
+    .hljs-attribute,
+    .hljs-tag,
+    .hljs-name,
+    .hljs-regexp,
+    .hljs-link,
+    .hljs-name,
+    .hljs-selector-id,
+    .hljs-selector-class {
+      color: #f98181;
+    }
 
-/* Code block language indicator */
-.tiptap-editor pre[data-language]::before {
-  content: attr(data-language);
-  position: absolute;
-  top: 0.5rem;
-  right: 1rem;
-  font-size: 0.75rem;
-  color: #9ca3af;
-  text-transform: uppercase;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-}
+    .hljs-number,
+    .hljs-meta,
+    .hljs-built_in,
+    .hljs-builtin-name,
+    .hljs-literal,
+    .hljs-type,
+    .hljs-params {
+      color: #fbbc88;
+    }
 
-/* Syntax highlighting colors */
-.tiptap-editor .hljs-keyword {
-  color: #f59e0b;
-}
+    .hljs-string,
+    .hljs-symbol,
+    .hljs-bullet {
+      color: #b9f18d;
+    }
 
-.tiptap-editor .hljs-string {
-  color: #10b981;
-}
+    .hljs-title,
+    .hljs-section {
+      color: #faf594;
+    }
 
-.tiptap-editor .hljs-comment {
-  color: #6b7280;
-  font-style: italic;
-}
+    .hljs-keyword,
+    .hljs-selector-tag {
+      color: #70cff8;
+    }
 
-.tiptap-editor .hljs-function {
-  color: #3b82f6;
-}
+    .hljs-emphasis {
+      font-style: italic;
+    }
 
-.tiptap-editor .hljs-number {
-  color: #8b5cf6;
-}
-
-.tiptap-editor .hljs-operator {
-  color: #ef4444;
-}
-
-.tiptap-editor .hljs-punctuation {
-  color: #9ca3af;
+    .hljs-strong {
+      font-weight: 700;
+    }
+  }
 }

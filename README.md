@@ -13,6 +13,26 @@ A powerful, feature-rich rich text editor built with Tiptap and React. This pack
 - **TypeScript**: Full TypeScript support with type definitions
 - **Read-only Mode**: Viewer component for displaying content
 
+# 📸 Screenshots
+
+### Main Toolbar, Debug Panel and Action Buttons
+
+![Main Toolbar, Debug Panel and Action Buttons](src/assets/menu-debug-actions.png)
+
+### Titles, Lists and Table
+
+![Titles, Lists and Table](src/assets/titles-list-table.png)
+
+### Code, Accordion and Iframe
+
+![Code, Accordion and Iframe](src/assets/code-accordion-iframe.png)
+
+_Image and video upload functionality with Firebase integration_
+
+### Block, Tabs and Images
+
+![Block, Tabs and Images](src/assets/block-tabs-image.png)
+
 ## 📦 Installation
 
 ```bash
