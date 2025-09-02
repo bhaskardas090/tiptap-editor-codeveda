@@ -6,7 +6,25 @@ import { defineConfig } from "vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss(), dts({ insertTypesEntry: true })],
+  plugins: [
+    react(),
+    tailwindcss(),
+    dts({
+      insertTypesEntry: true,
+      include: ["src/**/*"],
+      exclude: [
+        "src/**/*.test.*",
+        "src/**/*.spec.*",
+        "src/main.tsx",
+        "src/App.tsx",
+      ],
+      outDir: "dist",
+      entryRoot: "src",
+      rollupTypes: true,
+      copyDtsFiles: true,
+      tsconfigPath: "./tsconfig.build.json",
+    }),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -25,6 +43,29 @@ export default defineConfig({
         "@tiptap/react",
         "@tiptap/core",
         "@tiptap/starter-kit",
+        "@tiptap/extension-table",
+        "@tiptap/extension-table-row",
+        "@tiptap/extension-table-header",
+        "@tiptap/extension-table-cell",
+        "@tiptap/extension-image",
+        "@tiptap/extension-link",
+        "@tiptap/extension-underline",
+        "@tiptap/extension-strike",
+        "@tiptap/extension-text-style",
+        "@tiptap/extension-color",
+        "@tiptap/extension-highlight",
+        "@tiptap/extension-code-block-lowlight",
+        "@tiptap/extension-blockquote",
+        "@tiptap/extension-horizontal-rule",
+        "firebase",
+        "lowlight",
+        "lucide-react",
+        "clsx",
+        "tailwind-merge",
+        "class-variance-authority",
+        "@radix-ui/react-slot",
+        "@floating-ui/react",
+        "react-tabs",
       ],
       output: {
         globals: {
