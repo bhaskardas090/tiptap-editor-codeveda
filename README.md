@@ -338,55 +338,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 MIT License - feel free to use this in your projects.
 
-## 🔧 Troubleshooting
-
-### Styles Not Working
-
-If the editor appears unstyled or extensions don't look correct:
-
-1. **Make sure you've imported the CSS:**
-
-   ```tsx
-   import "tiptap-editor-codeveda/styles";
-   ```
-
-2. **Check your build configuration** - ensure CSS files are being processed by your bundler
-
-3. **Verify the CSS file exists** in `node_modules/tiptap-editor-codeveda/dist/tiptap-editor-codeveda.css`
-
-4. **Try importing CSS directly:**
-   ```tsx
-   import "tiptap-editor-codeveda/dist/tiptap-editor-codeveda.css";
-   ```
-
-### TypeScript Errors
-
-If you get TypeScript errors about missing module declarations:
-
-1. **Update to the latest version** of the package
-2. **Restart your TypeScript server** in your IDE
-3. **Clear your node_modules** and reinstall:
-   ```bash
-   rm -rf node_modules package-lock.json
-   npm install
-   ```
-
-### Form Submission Issues
-
-If the editor triggers form submission when clicking buttons:
-
-1. **This is now fixed!** All editor buttons have `type="button"` to prevent form submission
-2. **Update to the latest version** of the package
-3. **If using an older version**, wrap the editor in a div with `onSubmit={(e) => e.preventDefault()}`
-
-### Build Issues
-
-If you encounter build issues:
-
-1. **Check your bundler configuration** supports CSS imports
-2. **Ensure you're using a modern bundler** (Vite, Webpack 5+, Parcel, etc.)
-3. **Try the HTML import method** as a fallback
-
 ## 🐛 Issues
 
 If you encounter any issues, please report them on the GitHub repository.
