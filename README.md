@@ -86,6 +86,10 @@ import "tiptap-editor-codeveda/dist/tiptap-editor-codeveda.css"; // Import CSS d
 
 **Note:** Without importing the CSS, the editor will function but won't have proper styling for extensions like tables, code blocks, accordions, etc.
 
+## 🔧 Form Integration
+
+The editor is designed to work seamlessly inside forms. All buttons have `type="button"` to prevent accidental form submission when clicking editor controls.
+
 ## 🔧 Basic Usage
 
 ### Simple Editor
@@ -366,6 +370,13 @@ If you get TypeScript errors about missing module declarations:
    rm -rf node_modules package-lock.json
    npm install
    ```
+
+### Form Submission Issues
+If the editor triggers form submission when clicking buttons:
+
+1. **This is now fixed!** All editor buttons have `type="button"` to prevent form submission
+2. **Update to the latest version** of the package
+3. **If using an older version**, wrap the editor in a div with `onSubmit={(e) => e.preventDefault()}`
 
 ### Build Issues
 
