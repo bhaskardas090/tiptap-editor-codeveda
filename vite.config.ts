@@ -11,7 +11,13 @@ export default defineConfig({
     tailwindcss(),
     dts({
       insertTypesEntry: true,
-      include: ["src/index.ts", "src/tiptap-editor.tsx", "src/tiptap-viewer.tsx", "src/useEditorContent.ts", "src/types.ts"],
+      include: [
+        "src/index.ts",
+        "src/tiptap-editor.tsx",
+        "src/tiptap-viewer.tsx",
+        "src/useEditorContent.ts",
+        "src/types.ts",
+      ],
       exclude: [
         "src/**/*.test.*",
         "src/**/*.spec.*",
