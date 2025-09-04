@@ -46,27 +46,42 @@ npm install tiptap-editor-codeveda
 **Important:** You must import the CSS styles for the editor to display correctly. Choose one of the following methods:
 
 ### Method 1: Import from styles export (Recommended)
+
 ```tsx
-import { TiptapEditor, TiptapViewer, useEditorContent } from 'tiptap-editor-codeveda';
-import 'tiptap-editor-codeveda/styles'; // Import CSS styles
+import {
+  TiptapEditor,
+  TiptapViewer,
+  useEditorContent,
+} from "tiptap-editor-codeveda";
+import "tiptap-editor-codeveda/styles"; // Import CSS styles
 ```
 
 ### Method 2: Import CSS directly from dist
+
 ```tsx
-import { TiptapEditor, TiptapViewer, useEditorContent } from 'tiptap-editor-codeveda';
-import 'tiptap-editor-codeveda/dist/tiptap-editor-codeveda.css'; // Import CSS directly
+import {
+  TiptapEditor,
+  TiptapViewer,
+  useEditorContent,
+} from "tiptap-editor-codeveda";
+import "tiptap-editor-codeveda/dist/tiptap-editor-codeveda.css"; // Import CSS directly
 ```
 
 ### Method 3: Import in your main CSS file
+
 ```css
 /* In your main CSS file (e.g., index.css, App.css) */
-@import 'tiptap-editor-codeveda/styles';
+@import "tiptap-editor-codeveda/styles";
 ```
 
 ### Method 4: Import in HTML
+
 ```html
 <!-- In your index.html -->
-<link rel="stylesheet" href="node_modules/tiptap-editor-codeveda/dist/tiptap-editor-codeveda.css">
+<link
+  rel="stylesheet"
+  href="node_modules/tiptap-editor-codeveda/dist/tiptap-editor-codeveda.css"
+/>
 ```
 
 **Note:** Without importing the CSS, the editor will function but won't have proper styling for extensions like tables, code blocks, accordions, etc.
@@ -322,9 +337,11 @@ MIT License - feel free to use this in your projects.
 ## 🔧 Troubleshooting
 
 ### Styles Not Working
+
 If the editor appears unstyled or extensions don't look correct:
 
 1. **Make sure you've imported the CSS:**
+
    ```tsx
    import "tiptap-editor-codeveda/styles";
    ```
@@ -339,6 +356,7 @@ If the editor appears unstyled or extensions don't look correct:
    ```
 
 ### TypeScript Errors
+
 If you get TypeScript errors about missing module declarations:
 
 1. **Update to the latest version** of the package
@@ -350,6 +368,7 @@ If you get TypeScript errors about missing module declarations:
    ```
 
 ### Build Issues
+
 If you encounter build issues:
 
 1. **Check your bundler configuration** supports CSS imports
