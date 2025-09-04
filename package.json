@@ -37,12 +37,15 @@
   "files": [
     "dist"
   ],
+  "style": "dist/tiptap-editor-codeveda.css",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "style": "./dist/tiptap-editor-codeveda.css",
       "import": "./dist/tiptap-editor-codeveda.es.js",
       "require": "./dist/tiptap-editor-codeveda.umd.js"
-    }
+    },
+    "./styles": "./dist/tiptap-editor-codeveda.css"
   },
   "dependencies": {
     "@floating-ui/react": "^0.27.16",

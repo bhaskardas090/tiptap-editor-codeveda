@@ -35,7 +35,9 @@ export default defineConfig({
       entry: path.resolve(__dirname, "src/index.ts"),
       name: "TiptapEditorCodeveda",
       fileName: (format) => `tiptap-editor-codeveda.${format}.js`,
+      formats: ["es", "umd"],
     },
+    cssCodeSplit: false,
     rollupOptions: {
       external: [
         "react",
