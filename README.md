@@ -41,12 +41,43 @@ _Image and video upload functionality with Firebase integration_
 npm install tiptap-editor-codeveda
 ```
 
+## 🎨 CSS Import (Required)
+
+**Important:** You must import the CSS styles for the editor to display correctly. Choose one of the following methods:
+
+### Method 1: Import from styles export (Recommended)
+```tsx
+import { TiptapEditor, TiptapViewer, useEditorContent } from 'tiptap-editor-codeveda';
+import 'tiptap-editor-codeveda/styles'; // Import CSS styles
+```
+
+### Method 2: Import CSS directly from dist
+```tsx
+import { TiptapEditor, TiptapViewer, useEditorContent } from 'tiptap-editor-codeveda';
+import 'tiptap-editor-codeveda/dist/tiptap-editor-codeveda.css'; // Import CSS directly
+```
+
+### Method 3: Import in your main CSS file
+```css
+/* In your main CSS file (e.g., index.css, App.css) */
+@import 'tiptap-editor-codeveda/styles';
+```
+
+### Method 4: Import in HTML
+```html
+<!-- In your index.html -->
+<link rel="stylesheet" href="node_modules/tiptap-editor-codeveda/dist/tiptap-editor-codeveda.css">
+```
+
+**Note:** Without importing the CSS, the editor will function but won't have proper styling for extensions like tables, code blocks, accordions, etc.
+
 ## 🔧 Basic Usage
 
 ### Simple Editor
 
 ```tsx
 import { TiptapEditor, useEditorContent } from "tiptap-editor-codeveda";
+import "tiptap-editor-codeveda/styles"; // Don't forget to import CSS!
 
 function MyApp() {
   const { content, html, json, setContent } = useEditorContent();
@@ -69,6 +100,7 @@ function MyApp() {
 
 ```tsx
 import { TiptapEditor, useEditorContent } from "tiptap-editor-codeveda";
+import "tiptap-editor-codeveda/styles"; // Don't forget to import CSS!
 
 function EditorWithUploads() {
   const { content, setContent } = useEditorContent();
@@ -115,6 +147,7 @@ function EditorWithUploads() {
 
 ```tsx
 import { TiptapViewer } from "tiptap-editor-codeveda";
+import "tiptap-editor-codeveda/styles"; // Don't forget to import CSS!
 
 function ContentViewer({ htmlContent }: { htmlContent: string }) {
   return (
@@ -285,6 +318,43 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 📄 License
 
 MIT License - feel free to use this in your projects.
+
+## 🔧 Troubleshooting
+
+### Styles Not Working
+If the editor appears unstyled or extensions don't look correct:
+
+1. **Make sure you've imported the CSS:**
+   ```tsx
+   import "tiptap-editor-codeveda/styles";
+   ```
+
+2. **Check your build configuration** - ensure CSS files are being processed by your bundler
+
+3. **Verify the CSS file exists** in `node_modules/tiptap-editor-codeveda/dist/tiptap-editor-codeveda.css`
+
+4. **Try importing CSS directly:**
+   ```tsx
+   import "tiptap-editor-codeveda/dist/tiptap-editor-codeveda.css";
+   ```
+
+### TypeScript Errors
+If you get TypeScript errors about missing module declarations:
+
+1. **Update to the latest version** of the package
+2. **Restart your TypeScript server** in your IDE
+3. **Clear your node_modules** and reinstall:
+   ```bash
+   rm -rf node_modules package-lock.json
+   npm install
+   ```
+
+### Build Issues
+If you encounter build issues:
+
+1. **Check your bundler configuration** supports CSS imports
+2. **Ensure you're using a modern bundler** (Vite, Webpack 5+, Parcel, etc.)
+3. **Try the HTML import method** as a fallback
 
 ## 🐛 Issues
 
