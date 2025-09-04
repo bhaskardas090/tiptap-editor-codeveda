@@ -85,6 +85,7 @@ export default function TabsComponent({
             {tabItems.map((_: any, index: number) => (
               <button
                 key={index}
+                type="button"
                 onClick={() => handleTabClick(index)}
                 className={`px-4 py-2 text-sm font-medium border-b-2 border-r border-gray-200 transition-colors relative lg:px-12 cursor-pointer ${
                   activeTab === index
@@ -126,6 +127,7 @@ export default function TabsComponent({
           {/* Delete Button */}
           {isEditable && (
             <button
+              type="button"
               onClick={handleDeleteTabs}
               className="px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors"
               title="Delete tabs"

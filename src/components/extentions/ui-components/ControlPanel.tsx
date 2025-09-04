@@ -18,6 +18,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   return (
     <div className="mb-4 flex justify-end gap-2">
       <Button
+        type="button"
         onClick={onLogContent}
         variant="outline"
         size="sm"
@@ -28,6 +29,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         Log Content
       </Button>
       <Button
+        type="button"
         onClick={() => setIsReadOnly(!isReadOnly)}
         variant={isReadOnly ? "default" : "outline"}
         size="sm"

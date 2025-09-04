@@ -23,6 +23,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({
 }) => {
   const button = (
     <Button
+      type="button"
       onClick={onClick}
       variant={isActive ? "default" : "outline"}
       size="sm"

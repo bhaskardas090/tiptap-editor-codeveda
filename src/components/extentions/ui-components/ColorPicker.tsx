@@ -33,6 +33,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ onColorChange }) => {
         <Tooltip key={color} delay={300} closeDelay={0}>
           <TooltipTrigger asChild>
             <button
+              type="button"
               className="w-6 h-6 rounded border border-gray-300 cursor-pointer hover:scale-110 transition-transform"
               style={{ backgroundColor: color }}
               onClick={() => onColorChange(color)}

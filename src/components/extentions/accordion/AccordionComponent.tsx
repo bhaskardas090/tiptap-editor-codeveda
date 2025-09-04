@@ -61,6 +61,7 @@ export default function AccordionComponent({
         <div className="flex items-center gap-2 px-1">
           {/* Toggle Button */}
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               toggleAccordion();
@@ -113,6 +114,7 @@ export default function AccordionComponent({
           {/* Delete Button */}
           {isEditable && (
             <button
+              type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 handleDeleteAccordion();

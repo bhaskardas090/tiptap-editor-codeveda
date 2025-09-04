@@ -148,6 +148,7 @@ const BubbleMenu: React.FC<BubbleMenuProps> = ({ editor, isReadOnly }) => {
                   }}
                 />
                 <Button
+                  type="button"
                   onClick={handleSetLink}
                   size="sm"
                   className="h-8 cursor-pointer"

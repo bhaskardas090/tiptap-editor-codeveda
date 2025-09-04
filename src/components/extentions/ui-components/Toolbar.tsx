@@ -174,6 +174,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
                     Insert Image
                   </h3>
                   <button
+                    type="button"
                     onClick={() => setShowImageInput(false)}
                     className={`text-gray-400 hover:text-gray-600 ${
                       isImageUploading ? "opacity-50 cursor-not-allowed" : ""
@@ -205,6 +206,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
                       }}
                     />
                     <Button
+                      type="button"
                       onClick={handleImageUrlInsert}
                       size="sm"
                       className="px-4 py-2"
@@ -242,6 +244,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
                     Or Upload Image
                   </label>
                   <Button
+                    type="button"
                     onClick={onImageUpload}
                     size="sm"
                     variant="outline"
