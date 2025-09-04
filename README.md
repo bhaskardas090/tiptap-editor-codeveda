@@ -372,6 +372,7 @@ If you get TypeScript errors about missing module declarations:
    ```
 
 ### Form Submission Issues
+
 If the editor triggers form submission when clicking buttons:
 
 1. **This is now fixed!** All editor buttons have `type="button"` to prevent form submission
