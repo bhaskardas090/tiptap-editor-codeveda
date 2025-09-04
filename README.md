@@ -45,7 +45,7 @@ npm install tiptap-editor-codeveda
 
 **Important:** You must import the CSS styles for the editor to display correctly. Choose one of the following methods:
 
-### Method 1: Import from styles export (Recommended)
+### Method 1: Import CSS directly from dist (Recommended)
 
 ```tsx
 import {
@@ -53,10 +53,10 @@ import {
   TiptapViewer,
   useEditorContent,
 } from "tiptap-editor-codeveda";
-import "tiptap-editor-codeveda/styles"; // Import CSS styles
+import "tiptap-editor-codeveda/dist/tiptap-editor-codeveda.css"; // Import CSS directly
 ```
 
-### Method 2: Import CSS directly from dist
+### Method 2: Import from styles export
 
 ```tsx
 import {
@@ -92,7 +92,7 @@ import "tiptap-editor-codeveda/dist/tiptap-editor-codeveda.css"; // Import CSS d
 
 ```tsx
 import { TiptapEditor, useEditorContent } from "tiptap-editor-codeveda";
-import "tiptap-editor-codeveda/styles"; // Don't forget to import CSS!
+import "tiptap-editor-codeveda/dist/tiptap-editor-codeveda.css"; // Don't forget to import CSS!
 
 function MyApp() {
   const { content, html, json, setContent } = useEditorContent();
@@ -115,7 +115,7 @@ function MyApp() {
 
 ```tsx
 import { TiptapEditor, useEditorContent } from "tiptap-editor-codeveda";
-import "tiptap-editor-codeveda/styles"; // Don't forget to import CSS!
+import "tiptap-editor-codeveda/dist/tiptap-editor-codeveda.css"; // Don't forget to import CSS!
 
 function EditorWithUploads() {
   const { content, setContent } = useEditorContent();
@@ -162,7 +162,7 @@ function EditorWithUploads() {
 
 ```tsx
 import { TiptapViewer } from "tiptap-editor-codeveda";
-import "tiptap-editor-codeveda/styles"; // Don't forget to import CSS!
+import "tiptap-editor-codeveda/dist/tiptap-editor-codeveda.css"; // Don't forget to import CSS!
 
 function ContentViewer({ htmlContent }: { htmlContent: string }) {
   return (

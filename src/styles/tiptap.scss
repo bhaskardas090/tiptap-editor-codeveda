@@ -1,16 +1,16 @@
 /* Tiptap Editor Styles */
 
 /* Import extension-specific styles */
-// @import "@/components/extentions/video/video.scss";
-// @import "@/components/extentions/table/table.scss";
-// @import "@/components/extentions/image/image.scss";
-// @import "@/components/extentions/code-block/code-block.scss";
-// @import "@/components/extentions/accordion/accordion.scss";
-// @import "@/components/extentions/tabs/tabs.scss";
-// @import "@/components/extentions/iframe/iframe.scss";
-// @import "@/components/extentions/column-layout/column-layout.scss";
-// @import "@/components/extentions/core-elements/core-elements.scss";
-// @import "@/components/extentions/ui-components/ui-components.scss";
+@import "@/components/extentions/video/video.scss";
+@import "@/components/extentions/table/table.scss";
+@import "@/components/extentions/image/image.scss";
+@import "@/components/extentions/code-block/code-block.scss";
+@import "@/components/extentions/accordion/accordion.scss";
+@import "@/components/extentions/tabs/tabs.scss";
+@import "@/components/extentions/iframe/iframe.scss";
+@import "@/components/extentions/column-layout/column-layout.scss";
+@import "@/components/extentions/core-elements/core-elements.scss";
+@import "@/components/extentions/ui-components/ui-components.scss";
 
 .tiptap-editor {
   outline: none;

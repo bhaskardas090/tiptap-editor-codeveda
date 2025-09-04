@@ -4,9 +4,13 @@ declare module "tiptap-editor-codeveda/styles" {
   export default styles;
 }
 
-// Also declare the main package styles
-declare module "tiptap-editor-codeveda" {
-  // This allows importing CSS from the main package
-  const styles: string;
-  export { styles };
+// Global module declaration for CSS imports
+declare module "*.css" {
+  const content: string;
+  export default content;
+}
+
+declare module "*.scss" {
+  const content: string;
+  export default content;
 }
