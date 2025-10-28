@@ -27,9 +27,11 @@ import {
 const Tiptap = ({
   styles,
   editorContent,
+  immediatelyRender = false,
 }: {
   styles?: string;
   editorContent?: string;
+  immediatelyRender?: boolean;
 }) => {
   const [, forceUpdate] = useState({});
   const [isReadOnly] = useState(true);
@@ -77,6 +79,7 @@ const Tiptap = ({
     ],
     content: editorContent || `<h1>Nothing on Canvas :(</h1>`,
     editable: !isReadOnly,
+    immediatelyRender,
     editorProps: {
       attributes: {
         class: `prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[400px] p-4 ${styles}`,
