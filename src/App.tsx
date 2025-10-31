@@ -7,8 +7,11 @@ function App() {
 
   return (
     <>
-      <TiptapEditor setEditorContent={setEditorContent} />
-      <TiptapViewer editorContent={content.html} />
+      <TiptapEditor
+        setEditorContent={setEditorContent}
+        content="<p>Hello World</p>"
+      />
+      {/* <TiptapViewer editorContent={content.html} /> */}
     </>
   );
 }

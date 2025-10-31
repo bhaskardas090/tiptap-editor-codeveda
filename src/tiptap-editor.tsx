@@ -34,12 +34,18 @@ import {
 interface TiptapProps {
   onImageUpload?: (file: File) => Promise<string>; // Function to upload image and return URL
   onVideoUpload?: (file: File) => Promise<string>; // Function to upload video and return URL
+  onImageDelete?: (url: string) => Promise<void>; // Function to delete image by URL
+  onVideoDelete?: (url: string) => Promise<void>; // Function to delete video by URL
+  content?: string;
   setEditorContent?: (content: { html: string; json: any }) => void;
 }
 
 const Tiptap: React.FC<TiptapProps> = ({
   onImageUpload,
   onVideoUpload,
+  onImageDelete,
+  onVideoDelete,
+  content,
   setEditorContent,
 }) => {
   const [imageUrl, setImageUrl] = useState("");
@@ -48,11 +54,42 @@ const Tiptap: React.FC<TiptapProps> = ({
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [isImageUploading, setIsImageUploading] = useState(false);
   const [isVideoUploading, setIsVideoUploading] = useState(false);
+  const [previousContent, setPreviousContent] = useState<any>(null);
   const [tableMenuPosition, setTableMenuPosition] = useState<{
     top: number;
     left: number;
     show: boolean;
   }>({ top: 0, left: 0, show: false });
+
+  // Helper function to extract image URLs from editor content
+  const extractImageUrls = (json: any): Set<string> => {
+    const urls = new Set<string>();
+    const traverse = (node: any) => {
+      if (node.type === "image" && node.attrs?.src) {
+        urls.add(node.attrs.src);
+      }
+      if (node.content && Array.isArray(node.content)) {
+        node.content.forEach(traverse);
+      }
+    };
+    traverse(json);
+    return urls;
+  };
+
+  // Helper function to extract video URLs from editor content
+  const extractVideoUrls = (json: any): Set<string> => {
+    const urls = new Set<string>();
+    const traverse = (node: any) => {
+      if (node.type === "video" && node.attrs?.src) {
+        urls.add(node.attrs.src);
+      }
+      if (node.content && Array.isArray(node.content)) {
+        node.content.forEach(traverse);
+      }
+    };
+    traverse(json);
+    return urls;
+  };
 
   const editor = useEditor({
     extensions: [
@@ -84,7 +121,9 @@ const Tiptap: React.FC<TiptapProps> = ({
         },
       }),
     ],
-    content: `
+    content:
+      content ||
+      `
       <p>Welcome to the Advanced Tiptap Editor! This editor includes all the features you requested. Try them out!</p>
       <p>You can use:</p>
       <ul>
@@ -108,8 +147,46 @@ const Tiptap: React.FC<TiptapProps> = ({
       },
     },
     onUpdate: () => {
+      const currentJson = editor.getJSON();
+
+      // Detect deleted images and videos by comparing with previous content
+      if (previousContent) {
+        const previousImageUrls = extractImageUrls(previousContent);
+        const currentImageUrls = extractImageUrls(currentJson);
+        const deletedImageUrls = [...previousImageUrls].filter(
+          (url) => !currentImageUrls.has(url)
+        );
+
+        const previousVideoUrls = extractVideoUrls(previousContent);
+        const currentVideoUrls = extractVideoUrls(currentJson);
+        const deletedVideoUrls = [...previousVideoUrls].filter(
+          (url) => !currentVideoUrls.has(url)
+        );
+
+        // Handle deleted images
+        deletedImageUrls.forEach((url) => {
+          if (onImageDelete) {
+            onImageDelete(url).catch((error) => {
+              console.error("Failed to delete image:", error);
+            });
+          }
+        });
+
+        // Handle deleted videos
+        deletedVideoUrls.forEach((url) => {
+          if (onVideoDelete) {
+            onVideoDelete(url).catch((error) => {
+              console.error("Failed to delete video:", error);
+            });
+          }
+        });
+      }
+
+      // Update previous content for next comparison
+      setPreviousContent(currentJson);
+
       // Force component re-render when editor content changes
-      setEditorContent?.({ html: editor.getHTML(), json: editor.getJSON() });
+      setEditorContent?.({ html: editor.getHTML(), json: currentJson });
       forceUpdate({});
     },
     onSelectionUpdate: () => {
@@ -118,6 +195,21 @@ const Tiptap: React.FC<TiptapProps> = ({
       forceUpdate({});
     },
   });
+
+  // Initialize previous content when editor is ready
+  useEffect(() => {
+    if (editor) {
+      setPreviousContent(editor.getJSON());
+    }
+  }, [editor]);
+
+  // Update previous content when content prop changes externally
+  useEffect(() => {
+    if (editor && content !== undefined) {
+      const currentJson = editor.getJSON();
+      setPreviousContent(currentJson);
+    }
+  }, [content, editor]);
 
   // Update editor editable state when readonly changes
   useEffect(() => {
