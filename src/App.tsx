@@ -3,7 +3,7 @@ import TiptapEditor from "./tiptap-editor";
 import { useState } from "react";
 
 function App() {
-  const [, setEditorContent] = useState({ html: "", json: null });
+  const [content, setEditorContent] = useState({ html: "", json: null });
 
   return (
     <>
@@ -11,7 +11,7 @@ function App() {
         setEditorContent={setEditorContent}
         content="<p>Hello World</p>"
       />
-      {/* <TiptapViewer editorContent={content.html} /> */}
+      <TiptapViewer editorContent={content.html} />
     </>
   );
 }
