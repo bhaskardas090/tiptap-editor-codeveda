@@ -1,7 +1,7 @@
 {
   "name": "tiptap-editor-codeveda",
   "private": false,
-  "version": "0.1.13",
+  "version": "0.1.14",
   "type": "module",
   "description": "A powerful, feature-rich WYSIWYG editor built with Tiptap, React, and TypeScript",
   "keywords": [
