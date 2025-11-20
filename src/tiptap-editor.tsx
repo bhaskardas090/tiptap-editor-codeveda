@@ -14,6 +14,7 @@ import {
   ColorExtension,
   HighlightExtension,
   CodeBlockExtension,
+  CodeBlockBg,
   BlockquoteExtension,
   HorizontalRuleExtension,
   Accordion,
@@ -24,6 +25,7 @@ import {
   Video,
   Toolbar,
   BubbleMenu,
+  CodeBlockMenu,
   FloatingMenu,
   TableMenu,
   DebugInfo,
@@ -106,6 +108,7 @@ const Tiptap: React.FC<TiptapProps> = ({
       ColorExtension,
       HighlightExtension,
       CodeBlockExtension,
+      CodeBlockBg,
       BlockquoteExtension,
       HorizontalRuleExtension,
       Accordion,
@@ -458,6 +461,9 @@ const Tiptap: React.FC<TiptapProps> = ({
 
         {/* Bubble Menu */}
         <BubbleMenu editor={editor} isReadOnly={isReadOnly} />
+
+        {/* Code Block Menu */}
+        <CodeBlockMenu editor={editor} isReadOnly={isReadOnly} />
 
         {/* Table Menu */}
         <TableMenu

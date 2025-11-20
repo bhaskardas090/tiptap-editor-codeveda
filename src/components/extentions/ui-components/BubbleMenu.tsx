@@ -45,6 +45,12 @@ const BubbleMenu: React.FC<BubbleMenuProps> = ({ editor, isReadOnly }) => {
   return (
     <TiptapBubbleMenu
       editor={editor}
+      shouldShow={({ editor, state }) => {
+        const { from, to } = state.selection;
+        const hasSelection = from !== to;
+        // Only show when text is selected and we're not inside a code block
+        return hasSelection && !editor.isActive("codeBlock");
+      }}
       className="bubble-menu bg-white border border-gray-300 rounded-lg p-2 shadow-lg z-50"
     >
       <div className="flex gap-1 items-center">
