@@ -13,7 +13,7 @@ export default function AccordionComponent({
 }) {
   const [open, setOpen] = useState(node.attrs?.open ?? true);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [title, setTitle] = useState(node.attrs?.title || "Accordion Title");
+  const [title, setTitle] = useState(node.attrs?.title || "Output");
   const titleInputRef = useRef<HTMLInputElement>(null);
   const isEditable = editor?.isEditable ?? false;
 
@@ -33,7 +33,7 @@ export default function AccordionComponent({
     if (e.key === "Enter") {
       handleTitleSave();
     } else if (e.key === "Escape") {
-      setTitle(node.attrs?.title || "Accordion Title");
+      setTitle(node.attrs?.title || "Output");
       setIsEditingTitle(false);
     }
   };
@@ -51,8 +51,127 @@ export default function AccordionComponent({
     }
   };
 
+  // Handle keyboard events to prevent unwanted deletion and cursor escape
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!isEditable || !editor) return;
+
+    const { selection } = editor.state;
+    const { $anchor } = selection;
+
+    // Prevent Enter from escaping the accordion
+    if (e.key === "Enter" && !e.shiftKey) {
+      // If we're right after the accordion node, prevent creating new content outside
+      if ($anchor.nodeBefore?.type.name === "accordion") {
+        e.preventDefault();
+        e.stopPropagation();
+        // Move cursor inside the last accordion item's content
+        const accordionNode = $anchor.nodeBefore;
+        if (accordionNode && accordionNode.childCount > 0) {
+          const lastAccordionItem = accordionNode.lastChild;
+          if (lastAccordionItem && lastAccordionItem.content.size > 0) {
+            // Find the position of the last accordion item
+            let lastItemPos = -1;
+            editor.state.doc.descendants((node: any, pos: number) => {
+              if (node.type.name === "accordionItem") {
+                lastItemPos = pos;
+                return false;
+              }
+            });
+
+            if (lastItemPos !== -1) {
+              const endPos = lastItemPos + lastAccordionItem.nodeSize - 2;
+              editor.chain().focus().setTextSelection(endPos).run();
+            }
+          } else {
+            // If last item is empty, just focus inside it
+            let lastItemPos = -1;
+            editor.state.doc.descendants((node: any, pos: number) => {
+              if (node.type.name === "accordionItem") {
+                lastItemPos = pos;
+                return false;
+              }
+            });
+            if (lastItemPos !== -1) {
+              editor
+                .chain()
+                .focus()
+                .setTextSelection(lastItemPos + 1)
+                .run();
+            }
+          }
+        }
+        return;
+      }
+    }
+
+    // Prevent Backspace/Delete from deleting the accordion when empty
+    if ((e.key === "Backspace" || e.key === "Delete") && !e.shiftKey) {
+      // If we're right after the accordion node, prevent deletion
+      if ($anchor.nodeBefore?.type.name === "accordion") {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
+      // If we're right before the accordion node, prevent deletion
+      if ($anchor.nodeAfter?.type.name === "accordion") {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
+      // If we're inside an accordion item, check if it would delete the item itself
+      if ($anchor.parent.type.name === "accordionItem") {
+        const accordionItem = $anchor.parent;
+        const isAtStart = $anchor.parentOffset === 0;
+
+        // Check if the accordion item is effectively empty (only empty paragraphs)
+        const hasContent = accordionItem.content.content.some((node: any) => {
+          if (node.type.name === "paragraph") {
+            return node.content.size > 0;
+          }
+          return true; // Non-paragraph nodes are considered content
+        });
+
+        // If at start and no meaningful content, prevent deletion
+        if (isAtStart && !hasContent && e.key === "Backspace") {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
+      }
+
+      // If we're inside an accordion (but not in an item), check if it's empty
+      if ($anchor.parent.type.name === "accordion") {
+        const accordion = $anchor.parent;
+        // Check if all accordion items are empty
+        const hasAnyContent = accordion.content.content.some((item: any) => {
+          if (item.type.name === "accordionItem") {
+            return item.content.content.some((node: any) => {
+              if (node.type.name === "paragraph") {
+                return node.content.size > 0;
+              }
+              return true;
+            });
+          }
+          return true;
+        });
+
+        // If accordion has no content, prevent deletion
+        if (!hasAnyContent) {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
+      }
+    }
+  };
+
   return (
-    <NodeViewWrapper className="accordion border border-gray-200 rounded-lg mb-3 overflow-hidden">
+    <NodeViewWrapper
+      className="accordion border border-gray-200 rounded-lg mb-3 overflow-hidden"
+      onKeyDown={handleKeyDown}
+    >
       {/* Accordion Header */}
       <div
         className="accordion-header bg-gray-50 border-b border-gray-200"
