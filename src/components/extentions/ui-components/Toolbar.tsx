@@ -16,6 +16,7 @@ import {
   PanelTopOpen,
   Frame,
   Code,
+  Columns3,
 } from "lucide-react";
 import { Button } from "../../ui/button";
 
@@ -391,6 +392,19 @@ const Toolbar: React.FC<ToolbarProps> = ({
           title="Insert iframe"
         >
           <Frame className="h-4 w-4" />
+        </MenuButton>
+      </div>
+      {/* Layout */}
+      <div className="flex gap-1 border-r border-gray-300 pr-2">
+        <MenuButton
+          onClick={() =>
+            editor.chain().focus().insertColumnLayout({ columns: 2 }).run()
+          }
+          title="Insert 2 Column Layout"
+        >
+          <div className="flex items-center gap-1">
+            <Columns3 className="h-4 w-4" />
+          </div>
         </MenuButton>
       </div>
     </div>

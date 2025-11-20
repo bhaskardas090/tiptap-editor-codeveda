@@ -1,9 +1,8 @@
-import TiptapViewer from "./tiptap-viewer";
 import TiptapEditor from "./tiptap-editor";
 import { useState } from "react";
 
 function App() {
-  const [content, setEditorContent] = useState({ html: "", json: null });
+  const [, setEditorContent] = useState({ html: "", json: null });
 
   return (
     <>

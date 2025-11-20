@@ -31,6 +31,8 @@ import {
   DebugInfo,
   ControlPanel,
   logEditorContent,
+  ColumnLayout,
+  Column,
 } from "./components/extentions";
 
 interface TiptapProps {
@@ -116,6 +118,8 @@ const Tiptap: React.FC<TiptapProps> = ({
       Tabs,
       TabItem,
       Iframe,
+      ColumnLayout,
+      Column,
       Video.configure({
         inline: false,
         allowBase64: true,

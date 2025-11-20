@@ -23,6 +23,8 @@ import {
   TabItem,
   Iframe,
   Video,
+  ColumnLayout,
+  Column,
 } from "./components/extentions";
 
 const Tiptap = ({
@@ -71,6 +73,8 @@ const Tiptap = ({
       Tabs,
       TabItem,
       Iframe,
+      ColumnLayout,
+      Column,
       Video.configure({
         inline: false,
         allowBase64: true,
