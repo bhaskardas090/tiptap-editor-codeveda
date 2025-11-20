@@ -127,20 +127,7 @@ const Tiptap: React.FC<TiptapProps> = ({
     content:
       content ||
       `
-      <p>Welcome to the Advanced Tiptap Editor! This editor includes all the features you requested. Try them out!</p>
-      <p>You can use:</p>
-      <ul>
-        <li>Headings (H1, H2, H3)</li>
-        <li>Lists (bullet and numbered)</li>
-        <li>Tables</li>
-        <li>Block quotes</li>
-        <li>Code blocks with syntax highlighting</li>
-        <li>File uploads for images and videos</li>
-        <li>Iframe embeds (CodeSandbox, YouTube, etc.)</li>
-
-        <li>And much more...</li>
-      </ul>
-      <p>Place your cursor at an empty line to see the floating menu, or select text to see formatting options in the bubble menu.</p>
+      <p>Hello World. Create your own content here.</p>
     `,
     editable: !isReadOnly,
     editorProps: {
