@@ -5,6 +5,7 @@ import {
   Heading1,
   Heading2,
   Heading3,
+  Heading4,
   List,
   ListOrdered,
   Quote,
@@ -106,6 +107,15 @@ const Toolbar: React.FC<ToolbarProps> = ({
           title="Heading 3"
         >
           <Heading3 className="h-4 w-4" />
+        </MenuButton>
+        <MenuButton
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 4 }).run()
+          }
+          isActive={editor.isActive("heading", { level: 4 })}
+          title="Heading 4"
+        >
+          <Heading4 className="h-4 w-4" />
         </MenuButton>
         <MenuButton
           onClick={() => editor.chain().focus().setParagraph().run()}
