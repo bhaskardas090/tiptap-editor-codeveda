@@ -7,6 +7,7 @@
   border: 1px solid #e5e7eb;
   font-size: 16px;
   position: relative;
+  table-layout: fixed; /* Prevent columns from auto-adjusting */
 }
 
 .tiptap-editor th,
