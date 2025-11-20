@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { BubbleMenu as TiptapBubbleMenu } from "@tiptap/react/menus";
 import { Editor } from "@tiptap/react";
 import MenuButton from "./MenuButton";
-import ColorPicker from "./ColorPicker";
+import ColorPickerFont from "./ColorPickerFont";
+import ColorPickerBg from "./ColorPickerBg";
 import { Button } from "../../ui/button";
 import {
   Bold,
@@ -93,7 +94,7 @@ const BubbleMenu: React.FC<BubbleMenuProps> = ({ editor, isReadOnly }) => {
           </MenuButton>
           {showTextColorPicker && (
             <div className="absolute top-full mt-1 z-10 bg-white border border-gray-300 rounded-lg p-2 shadow-lg">
-              <ColorPicker
+              <ColorPickerFont
                 onColorChange={(color) => {
                   editor.chain().focus().setColor(color).run();
                   setShowTextColorPicker(false);
@@ -113,7 +114,7 @@ const BubbleMenu: React.FC<BubbleMenuProps> = ({ editor, isReadOnly }) => {
           </MenuButton>
           {showBgColorPicker && (
             <div className="absolute top-full mt-1 z-10 bg-white border border-gray-300 rounded-lg p-2 shadow-lg">
-              <ColorPicker
+              <ColorPickerBg
                 onColorChange={(color) => {
                   editor.chain().focus().toggleHighlight({ color }).run();
                   setShowBgColorPicker(false);

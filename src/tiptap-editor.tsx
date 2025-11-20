@@ -249,7 +249,7 @@ const Tiptap: React.FC<TiptapProps> = ({
           const editorRect = editor.view.dom.getBoundingClientRect();
 
           setTableMenuPosition({
-            top: rect.top - editorRect.top - 60,
+            top: rect.bottom - editorRect.top + 10,
             left: rect.left - editorRect.left,
             show: true,
           });

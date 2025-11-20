@@ -53,7 +53,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   if (isReadOnly) return null;
 
   return (
-    <div className="sticky top-0 z-40 border border-gray-300 mb-4 p-4 bg-gray-50/95 flex flex-wrap gap-2 shadow-sm backdrop-blur-sm">
+    <div className="sticky top-0 z-40 border border-gray-300 mb-10 p-4 bg-gray-50/95 flex flex-wrap gap-2 shadow-sm backdrop-blur-sm">
       {/* Text Format Buttons */}
       <div className="flex gap-1 border-r border-gray-300 pr-2">
         <MenuButton

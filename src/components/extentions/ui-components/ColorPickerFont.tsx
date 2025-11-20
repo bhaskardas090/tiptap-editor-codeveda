@@ -5,26 +5,23 @@ import {
   TooltipContent,
 } from "../../tiptap-ui-primitive/tooltip";
 
-interface ColorPickerProps {
+interface ColorPickerFontProps {
   onColorChange: (color: string) => void;
 }
 
-const ColorPicker: React.FC<ColorPickerProps> = ({ onColorChange }) => {
+const ColorPickerFont: React.FC<ColorPickerFontProps> = ({ onColorChange }) => {
   const colors = [
     "#000000",
-    "#FF0000",
-    "#00FF00",
-    "#0000FF",
-    "#FFFF00",
-    "#FF00FF",
-    "#00FFFF",
-    "#FFA500",
-    "#800080",
-    "#008000",
-    "#000080",
-    "#800000",
-    "#808000",
-    "#FFC0CB",
+    "#ffffff",
+    "#7d7a75",
+    "#9f765a",
+    "#d27b2d",
+    "#fdd835",
+    "#50946e",
+    "#377dc9",
+    "#9a6bb4",
+    "#c14c8a",
+    "#cf5148",
   ];
 
   return (
@@ -46,4 +43,5 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ onColorChange }) => {
   );
 };
 
-export default ColorPicker;
+export default ColorPickerFont;
+

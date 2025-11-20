@@ -1,5 +1,6 @@
 export { default as MenuButton } from "./MenuButton";
-export { default as ColorPicker } from "./ColorPicker";
+export { default as ColorPickerFont } from "./ColorPickerFont";
+export { default as ColorPickerBg } from "./ColorPickerBg";
 export { default as Toolbar } from "./Toolbar";
 export { default as BubbleMenu } from "./BubbleMenu";
 export { default as FloatingMenu } from "./FloatingMenu";
