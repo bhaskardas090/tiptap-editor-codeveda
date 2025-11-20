@@ -19,6 +19,14 @@ export default function TabsComponent({
   const tabItems = node.content?.content || [];
   const isEditable = editor?.isEditable ?? false;
 
+  // Sync activeTab with node attributes
+  useEffect(() => {
+    const currentActiveTab = node.attrs?.activeTab ?? 0;
+    if (currentActiveTab !== activeTab) {
+      setActiveTab(currentActiveTab);
+    }
+  }, [node.attrs?.activeTab]);
+
   useEffect(() => {
     if (editingTabIndex !== null && titleInputRef.current) {
       titleInputRef.current.focus();
@@ -48,13 +56,37 @@ export default function TabsComponent({
   };
 
   const handleTitleSave = () => {
-    if (editingTabIndex !== null && tabItems[editingTabIndex]) {
-      // Update the tab item's title attribute
-      const tabItem = tabItems[editingTabIndex];
-      if (tabItem.attrs) {
-        tabItem.attrs.title = editingTitle;
+    if (editingTabIndex !== null && tabItems[editingTabIndex] && editor) {
+      // Find the position of the tab item in the document
+      let tabItemPosition = -1;
+      editor.state.doc.descendants((node: any, pos: number) => {
+        if (
+          node.type.name === "tabItem" &&
+          node.attrs.tabIndex === editingTabIndex
+        ) {
+          tabItemPosition = pos;
+          return false;
+        }
+      });
+
+      if (tabItemPosition !== -1) {
+        editor
+          .chain()
+          .focus()
+          .command(({ tr, dispatch }: any) => {
+            if (dispatch) {
+              const nodeAtPos = tr.doc.nodeAt(tabItemPosition);
+              if (nodeAtPos) {
+                tr.setNodeMarkup(tabItemPosition, undefined, {
+                  ...nodeAtPos.attrs,
+                  title: editingTitle,
+                });
+              }
+            }
+            return true;
+          })
+          .run();
       }
-      updateAttributes({ ...node.attrs });
     }
     setEditingTabIndex(null);
     setEditingTitle("");
@@ -73,10 +105,69 @@ export default function TabsComponent({
     return tabItems[index]?.attrs?.title || `Tab ${index + 1}`;
   };
 
+  // Handle keyboard events to prevent unwanted TabItem creation
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!isEditable || !editor) return;
+
+    const { selection } = editor.state;
+    const { $anchor } = selection;
+
+    // Prevent Enter from creating new tab items when clicking outside
+    if (e.key === "Enter" && !e.shiftKey) {
+      // If we're right after the tabs node, prevent creating new tab items
+      if ($anchor.nodeBefore?.type.name === "tabs") {
+        e.preventDefault();
+        e.stopPropagation();
+        // Move cursor inside the last tab item's content
+        const tabsNode = $anchor.nodeBefore;
+        if (tabsNode && tabsNode.childCount > 0) {
+          const lastTabItem = tabsNode.lastChild;
+          if (lastTabItem && lastTabItem.content.size > 0) {
+            // Find the position of the last tab item
+            let lastTabItemPos = -1;
+            editor.state.doc.descendants((node: any, pos: number) => {
+              if (
+                node.type.name === "tabItem" &&
+                node.attrs.tabIndex === tabsNode.childCount - 1
+              ) {
+                lastTabItemPos = pos;
+                return false;
+              }
+            });
+
+            if (lastTabItemPos !== -1) {
+              const endPos = lastTabItemPos + lastTabItem.nodeSize - 2;
+              editor.chain().focus().setTextSelection(endPos).run();
+            }
+          }
+        }
+        return;
+      }
+    }
+
+    // Prevent Backspace/Delete from creating new tab items
+    if ((e.key === "Backspace" || e.key === "Delete") && !e.shiftKey) {
+      // If we're right after the tabs node, prevent deletion
+      if ($anchor.nodeBefore?.type.name === "tabs") {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
+      // If we're right before the tabs node, prevent deletion
+      if ($anchor.nodeAfter?.type.name === "tabs") {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+    }
+  };
+
   return (
     <NodeViewWrapper
       className="tabs-container border border-gray-200 rounded-lg mb-4 overflow-hidden"
       data-active-tab={activeTab}
+      onKeyDown={handleKeyDown}
     >
       {/* Tab Headers */}
       <div className="tabs-header bg-gray-50 border-b border-gray-200">

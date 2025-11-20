@@ -9,6 +9,7 @@ export const Tabs = Node.create({
   group: "block",
   content: "tabItem+",
   defining: true,
+  isolating: true,
 
   addAttributes() {
     return {
@@ -44,7 +45,38 @@ export const Tabs = Node.create({
   },
 
   addNodeView() {
-    return ReactNodeViewRenderer(TabsComponent);
+    return ReactNodeViewRenderer(TabsComponent, {
+      contentDOMElementTag: "div",
+    });
+  },
+
+  addKeyboardShortcuts() {
+    return {
+      Backspace: ({ editor }: any) => {
+        const { selection } = editor.state;
+        const { $anchor } = selection;
+
+        // If we're right after the tabs node (outside it), prevent backspace
+        // This prevents creating new tab items when clicking outside and pressing backspace
+        if ($anchor.nodeBefore?.type.name === "tabs") {
+          return true;
+        }
+
+        return false;
+      },
+      Delete: ({ editor }: any) => {
+        const { selection } = editor.state;
+        const { $anchor } = selection;
+
+        // If we're right before the tabs node (outside it), prevent delete
+        // This prevents creating new tab items when clicking outside and pressing delete
+        if ($anchor.nodeAfter?.type.name === "tabs") {
+          return true;
+        }
+
+        return false;
+      },
+    };
   },
 
   addCommands() {
@@ -62,7 +94,9 @@ export const Tabs = Node.create({
                 content: [
                   {
                     type: "text",
-                    text: `Content for Tab ${index + 1}. This is unique content for this tab.`,
+                    text: `Content for Tab ${
+                      index + 1
+                    }. This is unique content for this tab.`,
                   },
                 ],
               },
@@ -85,6 +119,7 @@ export const TabItem = Node.create({
   group: "block",
   content: "block+",
   defining: true,
+  isolating: true,
 
   addAttributes() {
     return {
@@ -123,6 +158,37 @@ export const TabItem = Node.create({
   },
 
   addNodeView() {
-    return ReactNodeViewRenderer(TabItemComponent);
+    return ReactNodeViewRenderer(TabItemComponent, {
+      contentDOMElementTag: "div",
+    });
+  },
+
+  addKeyboardShortcuts() {
+    return {
+      // The isolating property should handle most splitting prevention
+      // These shortcuts provide additional protection
+      Enter: () => {
+        // Allow Enter to work normally - isolating will prevent splitting
+        return false;
+      },
+      Backspace: ({ editor }: any) => {
+        const { selection } = editor.state;
+        const { $anchor } = selection;
+
+        // Prevent Backspace from splitting tab items at the very start
+        if ($anchor.parent.type.name === "tabItem") {
+          // If we're at the absolute start of the tab item
+          if ($anchor.parentOffset === 0 && $anchor.depth > 0) {
+            const tabItemStart = $anchor.start($anchor.depth);
+            if ($anchor.pos <= tabItemStart + 1) {
+              // We're at the very start, prevent deletion that might cause issues
+              return true;
+            }
+          }
+        }
+
+        return false;
+      },
+    };
   },
 });
