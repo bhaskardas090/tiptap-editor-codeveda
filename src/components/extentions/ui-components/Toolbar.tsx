@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Editor } from "@tiptap/react";
 import MenuButton from "./MenuButton";
 import {
@@ -17,6 +17,7 @@ import {
   Frame,
   Code,
   Columns3,
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "../../ui/button";
 
@@ -50,6 +51,28 @@ const Toolbar: React.FC<ToolbarProps> = ({
   imageUploadFunction,
 }) => {
   // Intentionally minimal state; remove unused link/color states to satisfy linter
+  const [showTabsDropdown, setShowTabsDropdown] = useState(false);
+  const tabsDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        tabsDropdownRef.current &&
+        !tabsDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowTabsDropdown(false);
+      }
+    };
+
+    if (showTabsDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showTabsDropdown]);
 
   if (isReadOnly) return null;
 
@@ -336,38 +359,80 @@ const Toolbar: React.FC<ToolbarProps> = ({
         >
           <span className="text-xs font-mono">2T</span>
         </MenuButton>
-        <MenuButton
-          onClick={() =>
-            (editor.chain().focus() as any).insertTabs({ tabCount: 3 }).run()
-          }
-          title="Insert 3 Tabs"
-        >
-          <span className="text-xs font-mono">3T</span>
-        </MenuButton>
-        <MenuButton
-          onClick={() =>
-            (editor.chain().focus() as any).insertTabs({ tabCount: 4 }).run()
-          }
-          title="Insert 4 Tabs"
-        >
-          <span className="text-xs font-mono">4T</span>
-        </MenuButton>
-        <MenuButton
-          onClick={() =>
-            (editor.chain().focus() as any).insertTabs({ tabCount: 5 }).run()
-          }
-          title="Insert 5 Tabs"
-        >
-          <span className="text-xs font-mono">5T</span>
-        </MenuButton>
-        <MenuButton
-          onClick={() =>
-            (editor.chain().focus() as any).insertTabs({ tabCount: 6 }).run()
-          }
-          title="Insert 6 Tabs"
-        >
-          <span className="text-xs font-mono">6T</span>
-        </MenuButton>
+        <div className="relative w-full" ref={tabsDropdownRef}>
+          <MenuButton
+            onClick={() => setShowTabsDropdown(!showTabsDropdown)}
+            title="Insert Tabs"
+            className="w-full px-2"
+          >
+            <div className="flex items-center gap-1 w-full justify-between">
+              <span className="text-xs font-mono">Tabs</span>
+              <ChevronDown className="h-3 w-3" />
+            </div>
+          </MenuButton>
+          {showTabsDropdown && (
+            <div className="absolute top-full mt-1 left-0 z-10 bg-white border border-gray-300 rounded-lg shadow-lg min-w-32">
+              <div className="p-1 space-y-1">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    (editor.chain().focus() as any)
+                      .insertTabs({ tabCount: 3 })
+                      .run();
+                    setShowTabsDropdown(false);
+                  }}
+                  className="w-full justify-start text-xs font-mono hover:bg-gray-100"
+                >
+                  3 Tabs
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    (editor.chain().focus() as any)
+                      .insertTabs({ tabCount: 4 })
+                      .run();
+                    setShowTabsDropdown(false);
+                  }}
+                  className="w-full justify-start text-xs font-mono hover:bg-gray-100"
+                >
+                  4 Tabs
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    (editor.chain().focus() as any)
+                      .insertTabs({ tabCount: 5 })
+                      .run();
+                    setShowTabsDropdown(false);
+                  }}
+                  className="w-full justify-start text-xs font-mono hover:bg-gray-100"
+                >
+                  5 Tabs
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    (editor.chain().focus() as any)
+                      .insertTabs({ tabCount: 6 })
+                      .run();
+                    setShowTabsDropdown(false);
+                  }}
+                  className="w-full justify-start text-xs font-mono hover:bg-gray-100"
+                >
+                  6 Tabs
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Iframe */}
