@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import {
   StarterKitExtension,
@@ -59,6 +59,7 @@ const Tiptap: React.FC<TiptapProps> = ({
   const [isImageUploading, setIsImageUploading] = useState(false);
   const [isVideoUploading, setIsVideoUploading] = useState(false);
   const [previousContent, setPreviousContent] = useState<any>(null);
+  const editorRef = useRef<any>(null);
   const [tableMenuPosition, setTableMenuPosition] = useState<{
     top: number;
     left: number;
@@ -139,6 +140,130 @@ const Tiptap: React.FC<TiptapProps> = ({
         class:
           "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[400px] p-4",
       },
+      handlePaste: (view, event, slice) => {
+        // Check if clipboard contains image files
+        const items = Array.from(event.clipboardData?.items || []);
+        const imageItems = items.filter(
+          (item) => item.type.indexOf("image") !== -1
+        );
+
+        // If there are image files in the clipboard and upload function is provided
+        if (imageItems.length > 0 && onImageUpload && editorRef.current) {
+          event.preventDefault();
+
+          // Process each image
+          const uploadPromises = imageItems.map((item) => {
+            const file = item.getAsFile();
+            if (!file) return Promise.resolve(null);
+
+            return onImageUpload(file)
+              .then((imageUrl) => {
+                if (imageUrl && editorRef.current) {
+                  // Insert the uploaded image
+                  editorRef.current
+                    .chain()
+                    .focus()
+                    .setImage({ src: imageUrl })
+                    .run();
+                }
+                return imageUrl;
+              })
+              .catch((error) => {
+                console.error("Failed to upload pasted image:", error);
+                alert("Failed to upload pasted image. Please try again.");
+                return null;
+              });
+          });
+
+          // Set uploading state
+          setIsImageUploading(true);
+
+          Promise.all(uploadPromises).finally(() => {
+            setIsImageUploading(false);
+          });
+
+          return true; // Indicate that we handled the paste event
+        }
+
+        // Also check for HTML content with image data URLs (when copying images from web pages)
+        const htmlData = event.clipboardData?.getData("text/html");
+        if (htmlData && onImageUpload && editorRef.current) {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(htmlData, "text/html");
+          const images = doc.querySelectorAll("img");
+
+          if (images.length > 0) {
+            // Check if any images have data URLs or external URLs that we should upload
+            const imagesToUpload = Array.from(images).filter((img) => {
+              const src = img.getAttribute("src");
+              return (
+                src &&
+                (src.startsWith("data:") ||
+                  src.startsWith("http://") ||
+                  src.startsWith("https://"))
+              );
+            });
+
+            if (imagesToUpload.length > 0) {
+              event.preventDefault();
+
+              const imagePromises = imagesToUpload.map((img) => {
+                const src = img.getAttribute("src");
+                if (!src) return Promise.resolve(null);
+
+                // Helper function to convert blob to file and upload
+                const uploadBlob = (blob: Blob, filename: string) => {
+                  const file = new File([blob], filename, {
+                    type: blob.type || "image/png",
+                  });
+                  return onImageUpload(file)
+                    .then((imageUrl) => {
+                      if (imageUrl && editorRef.current) {
+                        editorRef.current
+                          .chain()
+                          .focus()
+                          .setImage({ src: imageUrl })
+                          .run();
+                      }
+                      return imageUrl;
+                    })
+                    .catch((error) => {
+                      console.error("Failed to upload pasted image:", error);
+                      alert("Failed to upload pasted image. Please try again.");
+                      return null;
+                    });
+                };
+
+                // Check if it's a data URL or external URL
+                if (src.startsWith("data:")) {
+                  // Convert data URL to File
+                  return fetch(src)
+                    .then((res) => res.blob())
+                    .then((blob) => uploadBlob(blob, "pasted-image.png"));
+                } else if (
+                  src.startsWith("http://") ||
+                  src.startsWith("https://")
+                ) {
+                  // For external URLs, fetch and upload
+                  return fetch(src)
+                    .then((res) => res.blob())
+                    .then((blob) => uploadBlob(blob, "pasted-image.png"));
+                }
+                return Promise.resolve(null);
+              });
+
+              setIsImageUploading(true);
+              Promise.all(imagePromises).finally(() => {
+                setIsImageUploading(false);
+              });
+              return true;
+            }
+          }
+        }
+
+        // For non-image pastes or when no upload function, use default behavior
+        return false;
+      },
     },
     onUpdate: () => {
       const currentJson = editor.getJSON();
@@ -193,6 +318,7 @@ const Tiptap: React.FC<TiptapProps> = ({
   // Initialize previous content when editor is ready
   useEffect(() => {
     if (editor) {
+      editorRef.current = editor;
       setPreviousContent(editor.getJSON());
     }
   }, [editor]);
@@ -442,6 +568,35 @@ const Tiptap: React.FC<TiptapProps> = ({
       {/* Editor Content */}
       <div className="relative border border-gray-300 border-t-1 rounded-t-lg rounded-b-lg min-h-[400px]">
         <EditorContent editor={editor} className="tiptap-editor" />
+
+        {/* Image Upload Loader Overlay */}
+        {isImageUploading && (
+          <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50 rounded-lg">
+            <div className="flex flex-col items-center gap-3">
+              <div className="relative">
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-blue-600"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <svg
+                    className="w-6 h-6 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <p className="text-sm font-medium text-gray-700">
+                Uploading image...
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Floating Menu */}
         <FloatingMenu
