@@ -172,13 +172,13 @@ export default function TabsComponent({
       {/* Tab Headers */}
       <div className="tabs-header bg-gray-50 border-b border-gray-200">
         <div className="flex items-center justify-between">
-          <div className="flex flex-1 overflow-x-auto">
+          <div className="flex flex-1">
             {tabItems.map((_: any, index: number) => (
               <button
                 key={index}
                 type="button"
                 onClick={() => handleTabClick(index)}
-                className={`px-4 py-2 text-sm font-medium border-b-2 border-r border-gray-200 transition-colors relative lg:px-12 cursor-pointer ${
+                className={`flex-1 px-4 py-2 text-sm font-medium border-b-2 border-r border-gray-200 transition-colors relative cursor-pointer ${
                   activeTab === index
                     ? "border-blue-500 border-r-gray-200 text-blue-600 bg-white"
                     : "border-transparent border-r-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -192,7 +192,7 @@ export default function TabsComponent({
                     onChange={(e) => setEditingTitle(e.target.value)}
                     onBlur={handleTitleSave}
                     onKeyDown={handleTitleKeyDown}
-                    className="bg-transparent border-none outline-none text-center min-w-16"
+                    className="bg-transparent border-none outline-none text-center w-full"
                     onClick={(e) => e.stopPropagation()}
                   />
                 ) : (
@@ -205,7 +205,9 @@ export default function TabsComponent({
                           }
                         : undefined
                     }
-                    className={isEditable ? "cursor-text" : "cursor-pointer"}
+                    className={`block w-full text-center ${
+                      isEditable ? "cursor-text" : "cursor-pointer"
+                    }`}
                     title={isEditable ? "Click to edit title" : undefined}
                   >
                     {getTabTitle(index)}
