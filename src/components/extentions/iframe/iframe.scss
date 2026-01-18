@@ -9,13 +9,92 @@
   transition: all 0.2s ease;
 }
 
-.tiptap-editor iframe:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  transform: translateY(-1px);
-}
 
 .tiptap-editor iframe:focus {
   outline: 2px solid #3b82f6;
   outline-offset: 2px;
+}
+
+/* Fullscreen styles */
+.iframe-extension:fullscreen {
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+.iframe-extension:fullscreen iframe,
+.iframe-extension:fullscreen .iframe-fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  border-radius: 0 !important;
+  min-height: 100vh !important;
+}
+
+/* Webkit fullscreen support */
+.iframe-extension:-webkit-full-screen {
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+.iframe-extension:-webkit-full-screen iframe,
+.iframe-extension:-webkit-full-screen .iframe-fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  border-radius: 0 !important;
+  min-height: 100vh !important;
+}
+
+/* Mozilla fullscreen support */
+.iframe-extension:-moz-full-screen {
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+.iframe-extension:-moz-full-screen iframe,
+.iframe-extension:-moz-full-screen .iframe-fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  border-radius: 0 !important;
+  min-height: 100vh !important;
+}
+
+/* MS fullscreen support */
+.iframe-extension:-ms-fullscreen {
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+.iframe-extension:-ms-fullscreen iframe,
+.iframe-extension:-ms-fullscreen .iframe-fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  border-radius: 0 !important;
+  min-height: 100vh !important;
 }

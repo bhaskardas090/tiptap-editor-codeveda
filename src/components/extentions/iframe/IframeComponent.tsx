@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
 import { Button } from "../../ui/button";
-import { Settings, ExternalLink, Copy, Trash2 } from "lucide-react";
+import { Settings, ExternalLink, Copy, Trash2, Maximize, Minimize } from "lucide-react";
 
 interface IframeAttributes {
   src: string;
@@ -22,6 +22,8 @@ const IframeComponent: React.FC<NodeViewProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editMode, setEditMode] = useState<"simple" | "advanced">("simple");
   const [customIframeCode, setCustomIframeCode] = useState("");
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const iframeContainerRef = useRef<HTMLDivElement>(null);
   const [attributes, setAttributes] = useState<IframeAttributes>({
     src: node.attrs.src || "",
     width: node.attrs.width || "100%",
@@ -124,6 +126,59 @@ const IframeComponent: React.FC<NodeViewProps> = ({
     const iframeCode = `<iframe src="${attributes.src}" style="width:${attributes.width}; height: ${attributes.height}; ${attributes.style}" title="${attributes.title}" allow="${attributes.allow}" sandbox="${attributes.sandbox}"></iframe>`;
     navigator.clipboard.writeText(iframeCode);
   };
+
+  const toggleFullscreen = () => {
+    if (!iframeContainerRef.current) return;
+
+    if (!isFullscreen) {
+      // Enter fullscreen
+      if (iframeContainerRef.current.requestFullscreen) {
+        iframeContainerRef.current.requestFullscreen();
+      } else if ((iframeContainerRef.current as any).webkitRequestFullscreen) {
+        (iframeContainerRef.current as any).webkitRequestFullscreen();
+      } else if ((iframeContainerRef.current as any).mozRequestFullScreen) {
+        (iframeContainerRef.current as any).mozRequestFullScreen();
+      } else if ((iframeContainerRef.current as any).msRequestFullscreen) {
+        (iframeContainerRef.current as any).msRequestFullscreen();
+      }
+    } else {
+      // Exit fullscreen
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if ((document as any).webkitExitFullscreen) {
+        (document as any).webkitExitFullscreen();
+      } else if ((document as any).mozCancelFullScreen) {
+        (document as any).mozCancelFullScreen();
+      } else if ((document as any).msExitFullscreen) {
+        (document as any).msExitFullscreen();
+      }
+    }
+  };
+
+  // Listen for fullscreen changes
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const isCurrentlyFullscreen = !!(
+        document.fullscreenElement ||
+        (document as any).webkitFullscreenElement ||
+        (document as any).mozFullScreenElement ||
+        (document as any).msFullscreenElement
+      );
+      setIsFullscreen(isCurrentlyFullscreen);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+    document.addEventListener("mozfullscreenchange", handleFullscreenChange);
+    document.addEventListener("MSFullscreenChange", handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
+      document.removeEventListener("mozfullscreenchange", handleFullscreenChange);
+      document.removeEventListener("MSFullscreenChange", handleFullscreenChange);
+    };
+  }, []);
 
   const parseCustomIframeCode = (htmlCode: string) => {
     const parser = new DOMParser();
@@ -316,24 +371,28 @@ const IframeComponent: React.FC<NodeViewProps> = ({
 
   return (
     <NodeViewWrapper className="iframe-extension">
-      <div className="relative group">
+      <div ref={iframeContainerRef} className="relative group">
         {/* Iframe */}
         <iframe
           src={node.attrs.src}
-          width={node.attrs.width}
-          height={node.attrs.height}
+          {...(isFullscreen ? {} : { width: node.attrs.width, height: node.attrs.height })}
           title={node.attrs.title}
           allow={node.attrs.allow}
           sandbox={node.attrs.sandbox}
           style={{
             ...parseStyle(node.attrs.style),
-            width: node.attrs.width,
-            height: node.attrs.height,
+            ...(isFullscreen ? {
+              width: '100vw',
+              height: '100vh',
+            } : {
+              width: node.attrs.width,
+              height: node.attrs.height,
+            }),
           }}
-          className="rounded-lg"
+          className={isFullscreen ? "rounded-lg iframe-fullscreen" : "rounded-lg"}
         />
 
-        {/* Hover Controls - Only show when editable */}
+        {/* Hover Controls - Top right (only when editable) */}
         {isEditable && (
           <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/90 backdrop-blur-sm rounded-lg p-1 shadow-lg border">
             <div className="flex gap-1">
@@ -381,8 +440,25 @@ const IframeComponent: React.FC<NodeViewProps> = ({
           </div>
         )}
 
-        {/* Source URL display */}
-        {node.attrs.src && (
+        {/* Fullscreen button - Bottom right on mobile, top right on desktop, always visible */}
+        <div className={`absolute hidden md:block ${isFullscreen ? "md:top-[22px]" : "md:top-[7px]"} md:right-[150px] bg-white/90 rounded-lg p-1 shadow-lg border z-10 cursor-pointer`}>
+          <Button
+            onClick={toggleFullscreen}
+            size="sm"
+            variant="ghost"
+            className="h-6 w-8 p-0 cursor-pointer"
+            title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+          >
+            {isFullscreen ? (
+              <Minimize className="h-4 w-4" />
+            ) : (
+              <Maximize className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+
+        {/* Source URL display - only show when editable (edit mode) */}
+        {isEditable && node.attrs.src && (
           <div className="mt-2 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
             Source: {node.attrs.src}
           </div>
