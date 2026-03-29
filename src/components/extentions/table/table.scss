@@ -10,6 +10,19 @@
   table-layout: fixed; /* Prevent columns from auto-adjusting */
 }
 
+/* On mobile: force the table to a fixed width so the tableWrapper scrolls.
+   Also reset TipTap's stored pixel colwidths so all columns stay equal. */
+@media (max-width: 768px) {
+  .tiptap-editor table {
+    width: 600px !important;
+    min-width: 600px !important;
+  }
+
+  .tiptap-editor table col {
+    width: auto !important;
+  }
+}
+
 .tiptap-editor th,
 .tiptap-editor td {
   border: 1px solid #e5e7eb;
@@ -91,6 +104,8 @@
 
 .tiptap-editor .tableWrapper {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
   margin: 1rem 0;
   border-radius: 0.5rem;
   border: 1px solid #e5e7eb;
