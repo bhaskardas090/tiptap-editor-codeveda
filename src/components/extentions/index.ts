@@ -1,6 +1,6 @@
 // Built-in Extensions
 export { StarterKitExtension } from "./starter-kit";
-export { TableExtension, TableRow, TableHeader, TableCell } from "./table";
+export { TableExtension, ViewerTableExtension, TableRow, TableHeader, TableCell } from "./table";
 export { ImageExtension } from "./image";
 export { LinkExtension } from "./link";
 export { TextStyleExtension, ColorExtension } from "./text-style";

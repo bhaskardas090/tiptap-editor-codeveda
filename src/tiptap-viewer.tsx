@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import {
   StarterKitExtension,
-  TableExtension,
+  ViewerTableExtension,
   TableRow,
   TableHeader,
   TableCell,
@@ -42,7 +42,7 @@ const Tiptap = ({
   const editor = useEditor({
     extensions: [
       StarterKitExtension,
-      TableExtension,
+      ViewerTableExtension,
       TableRow,
       TableHeader,
       TableCell,
