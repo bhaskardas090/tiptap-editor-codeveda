@@ -8,8 +8,11 @@
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     max-width: 100%;
+    white-space: pre;
 
-    code {
+    /* NodeViewContent renders as a <div> — target both code and div */
+    code,
+    > div {
       background: none;
       color: inherit;
       font-size: 0.8rem;
