@@ -1,4 +1,6 @@
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import { ReactNodeViewRenderer } from "@tiptap/react";
+import CodeBlockComponent from "./CodeBlockComponent";
 import { all, createLowlight } from "lowlight";
 import css from "highlight.js/lib/languages/css";
 import js from "highlight.js/lib/languages/javascript";
@@ -27,6 +29,9 @@ lowlight.register("sql", sql);
 export const CodeBlockExtension = CodeBlockLowlight.extend({
   marks() {
     return "codeBlockBg";
+  },
+  addNodeView() {
+    return ReactNodeViewRenderer(CodeBlockComponent);
   },
 }).configure({
   lowlight,
