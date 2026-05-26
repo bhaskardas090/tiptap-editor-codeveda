@@ -2,40 +2,30 @@
 
 .tiptap-editor table {
   border-collapse: collapse;
-  margin: 1rem 0;
+  margin: 0;
   width: 100%;
+  min-width: 480px;
   border: 1px solid #e5e7eb;
-  font-size: 16px;
+  font-size: 15px;
   position: relative;
-  table-layout: fixed; /* Prevent columns from auto-adjusting */
-}
-
-/* On mobile: force the table to a fixed width so the tableWrapper scrolls.
-   Also reset TipTap's stored pixel colwidths so all columns stay equal. */
-@media (max-width: 768px) {
-  .tiptap-editor table {
-    width: 600px !important;
-    min-width: 600px !important;
-  }
-
-  .tiptap-editor table col {
-    width: auto !important;
-  }
+  table-layout: auto;
 }
 
 .tiptap-editor th,
 .tiptap-editor td {
   border: 1px solid #e5e7eb;
-  padding: 8px 16px; /* Equal vertical padding for centered content */
+  padding: 10px 14px;
   text-align: left;
   vertical-align: middle;
   position: relative;
-  min-width: 80px;
+  min-width: 100px;
+  max-width: 320px;
   transition: background-color 0.2s ease;
-  line-height: 1.2;
+  line-height: 1.5;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
-/* Remove margins from content inside cells to ensure proper vertical centering */
 .tiptap-editor th p,
 .tiptap-editor td p {
   margin: 0;
@@ -52,20 +42,21 @@
 }
 
 .tiptap-editor th {
-  background-color: #f8fafc; /* Dark gray header background */
+  background-color: #f8fafc;
   font-weight: 600;
-  color: #1f2937; /* Dark text for better contrast */
-  font-size: 16px;
+  color: #1f2937;
+  font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 8px 16px; /* Equal vertical padding for headers */
+  padding: 10px 14px;
   text-align: left;
+  white-space: nowrap;
 }
 
 .tiptap-editor td {
   background-color: #ffffff;
-  font-size: 16px;
-  padding: 8px 16px;
+  font-size: 15px;
+  padding: 10px 14px;
 }
 
 .tiptap-editor .selectedCell {
@@ -106,9 +97,11 @@
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   width: 100%;
+  max-width: 100%;
   margin: 1rem 0;
   border-radius: 0.5rem;
   border: 1px solid #e5e7eb;
+  display: block;
 }
 
 .tiptap-editor .tableWrapper table {
@@ -124,4 +117,14 @@
 .tiptap-editor .tableWrapper th:last-child,
 .tiptap-editor .tableWrapper td:last-child {
   border-right: none;
+}
+
+.tiptap-editor .tableWrapper tr:first-child th,
+.tiptap-editor .tableWrapper tr:first-child td {
+  border-top: none;
+}
+
+.tiptap-editor .tableWrapper tr:last-child th,
+.tiptap-editor .tableWrapper tr:last-child td {
+  border-bottom: none;
 }
