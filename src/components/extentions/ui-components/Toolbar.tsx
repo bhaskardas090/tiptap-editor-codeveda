@@ -16,6 +16,7 @@ import {
   Minus,
   PanelTopOpen,
   Frame,
+  MonitorPlay,
   Code,
   Columns3,
   ChevronDown,
@@ -445,7 +446,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         </div>
       </div>
 
-      {/* Iframe */}
+      {/* Iframe & Live Preview */}
       <div className="flex gap-1 border-r border-gray-300 pr-2">
         <MenuButton
           onClick={() => {
@@ -467,6 +468,14 @@ const Toolbar: React.FC<ToolbarProps> = ({
           title="Insert iframe"
         >
           <Frame className="h-4 w-4" />
+        </MenuButton>
+        <MenuButton
+          onClick={() => {
+            editor.chain().focus().insertLivePreview({ pendingEdit: true }).run();
+          }}
+          title="Insert live HTML/CSS/JS preview"
+        >
+          <MonitorPlay className="h-4 w-4" />
         </MenuButton>
       </div>
       {/* Layout */}

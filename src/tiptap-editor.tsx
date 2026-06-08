@@ -22,6 +22,7 @@ import {
   Tabs,
   TabItem,
   Iframe,
+  LivePreview,
   Video,
   Toolbar,
   BubbleMenu,
@@ -119,6 +120,7 @@ const Tiptap: React.FC<TiptapProps> = ({
       Tabs,
       TabItem,
       Iframe,
+      LivePreview,
       ColumnLayout,
       Column,
       Video.configure({
@@ -145,7 +147,7 @@ const Tiptap: React.FC<TiptapProps> = ({
         // Check if clipboard contains image files
         const items = Array.from(event.clipboardData?.items || []);
         const imageItems = items.filter(
-          (item) => item.type.indexOf("image") !== -1
+          (item) => item.type.indexOf("image") !== -1,
         );
 
         // If there are image files in the clipboard and upload function is provided
@@ -274,13 +276,13 @@ const Tiptap: React.FC<TiptapProps> = ({
         const previousImageUrls = extractImageUrls(previousContent);
         const currentImageUrls = extractImageUrls(currentJson);
         const deletedImageUrls = [...previousImageUrls].filter(
-          (url) => !currentImageUrls.has(url)
+          (url) => !currentImageUrls.has(url),
         );
 
         const previousVideoUrls = extractVideoUrls(previousContent);
         const currentVideoUrls = extractVideoUrls(currentJson);
         const deletedVideoUrls = [...previousVideoUrls].filter(
-          (url) => !currentVideoUrls.has(url)
+          (url) => !currentVideoUrls.has(url),
         );
 
         // Handle deleted images
@@ -487,7 +489,7 @@ const Tiptap: React.FC<TiptapProps> = ({
           alert(
             `Failed to upload video: ${
               error instanceof Error ? error.message : "Unknown error"
-            }`
+            }`,
           );
         } finally {
           setIsVideoUploading(false);
@@ -518,7 +520,7 @@ const Tiptap: React.FC<TiptapProps> = ({
           } catch (insertError) {
             console.error(
               "Error inserting base64 video into editor:",
-              insertError
+              insertError,
             );
           }
         };

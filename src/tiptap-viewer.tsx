@@ -22,6 +22,7 @@ import {
   Tabs,
   TabItem,
   Iframe,
+  LivePreview,
   Video,
   ColumnLayout,
   Column,
@@ -73,6 +74,7 @@ const Tiptap = ({
       Tabs,
       TabItem,
       Iframe,
+      LivePreview,
       ColumnLayout,
       Column,
       Video.configure({

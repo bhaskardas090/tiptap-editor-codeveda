@@ -17,6 +17,7 @@ export {
 export { Accordion, AccordionItem } from "./accordion/Accoridion";
 export { Tabs, TabItem } from "./tabs/Tabs";
 export { Iframe } from "./iframe";
+export { LivePreview } from "./live-preview";
 export { Video } from "./video";
 export { ColumnLayout, Column } from "./column";
 
