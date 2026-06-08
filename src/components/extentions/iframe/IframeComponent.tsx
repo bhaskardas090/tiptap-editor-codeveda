@@ -1,7 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
 import { Button } from "../../ui/button";
-import { Settings, ExternalLink, Copy, Trash2, Maximize, Minimize } from "lucide-react";
+import {
+  Settings,
+  ExternalLink,
+  Copy,
+  Trash2,
+  Maximize,
+  Minimize,
+} from "lucide-react";
 
 interface IframeAttributes {
   src: string;
@@ -174,9 +181,18 @@ const IframeComponent: React.FC<NodeViewProps> = ({
 
     return () => {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
-      document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
-      document.removeEventListener("mozfullscreenchange", handleFullscreenChange);
-      document.removeEventListener("MSFullscreenChange", handleFullscreenChange);
+      document.removeEventListener(
+        "webkitfullscreenchange",
+        handleFullscreenChange,
+      );
+      document.removeEventListener(
+        "mozfullscreenchange",
+        handleFullscreenChange,
+      );
+      document.removeEventListener(
+        "MSFullscreenChange",
+        handleFullscreenChange,
+      );
     };
   }, []);
 
@@ -375,21 +391,27 @@ const IframeComponent: React.FC<NodeViewProps> = ({
         {/* Iframe */}
         <iframe
           src={node.attrs.src}
-          {...(isFullscreen ? {} : { width: node.attrs.width, height: node.attrs.height })}
+          {...(isFullscreen
+            ? {}
+            : { width: node.attrs.width, height: node.attrs.height })}
           title={node.attrs.title}
           allow={node.attrs.allow}
           sandbox={node.attrs.sandbox}
           style={{
             ...parseStyle(node.attrs.style),
-            ...(isFullscreen ? {
-              width: '100vw',
-              height: '100vh',
-            } : {
-              width: node.attrs.width,
-              height: node.attrs.height,
-            }),
+            ...(isFullscreen
+              ? {
+                  width: "100vw",
+                  height: "100vh",
+                }
+              : {
+                  width: node.attrs.width,
+                  height: node.attrs.height,
+                }),
           }}
-          className={isFullscreen ? "rounded-lg iframe-fullscreen" : "rounded-lg"}
+          className={
+            isFullscreen ? "rounded-lg iframe-fullscreen" : "rounded-lg"
+          }
         />
 
         {/* Hover Controls - Top right (only when editable) */}
@@ -440,8 +462,8 @@ const IframeComponent: React.FC<NodeViewProps> = ({
           </div>
         )}
 
-        {/* Fullscreen button - Bottom right on mobile, top right on desktop, always visible */}
-        <div className={`absolute hidden md:block ${isFullscreen ? "md:top-[22px]" : "md:top-[7px]"} md:right-[150px] bg-white/90 rounded-lg p-1 shadow-lg border z-10 cursor-pointer`}>
+        {/* Fullscreen button - Bottom right, always visible */}
+        <div className="absolute hidden md:block md:bottom-20 md:right-4 bg-white/90 rounded-lg p-1 shadow-lg border z-10 cursor-pointer">
           <Button
             onClick={toggleFullscreen}
             size="sm"
@@ -477,7 +499,7 @@ const parseStyle = (styleString: string): React.CSSProperties => {
     const [property, value] = style.split(":").map((s) => s.trim());
     if (property && value) {
       const camelProperty = property.replace(/-([a-z])/g, (g) =>
-        g[1].toUpperCase()
+        g[1].toUpperCase(),
       );
       (styles as any)[camelProperty] = value;
     }
