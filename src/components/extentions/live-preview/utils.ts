@@ -32,13 +32,31 @@ export function buildSrcDoc(html: string, css: string, js: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     *, *::before, *::after { box-sizing: border-box; }
-    body { margin: 0; padding: 12px; }
+    html, body { margin: 0; }
+    body { padding: 12px; }
     ${css}
   </style>
 </head>
 <body>
 ${html}
 <script>${safeJs}<\/script>
+<script>(function () {
+  function postHeight() {
+    var h = Math.max(
+      document.body ? document.body.scrollHeight : 0,
+      document.documentElement ? document.documentElement.scrollHeight : 0,
+      document.body ? document.body.offsetHeight : 0
+    );
+    parent.postMessage({ type: "live-preview-height", height: h }, "*");
+  }
+  window.addEventListener("load", postHeight);
+  if (typeof ResizeObserver !== "undefined") {
+    var ro = new ResizeObserver(postHeight);
+    ro.observe(document.documentElement);
+    if (document.body) ro.observe(document.body);
+  }
+  setTimeout(postHeight, 50);
+})();<\/script>
 </body>
 </html>`;
 }

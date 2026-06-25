@@ -22,6 +22,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { Button } from "../../ui/button";
+import { getYouTubeEmbedUrl } from "../video/videoUtils";
 
 interface ToolbarProps {
   editor: Editor;
@@ -36,6 +37,12 @@ interface ToolbarProps {
   setImageUrl: (url: string) => void;
   handleImageUrlInsert: () => void;
   imageUploadFunction?: (file: File) => Promise<string>;
+  showVideoInput: boolean;
+  setShowVideoInput: (show: boolean) => void;
+  videoUrl: string;
+  setVideoUrl: (url: string) => void;
+  handleVideoUrlInsert: () => void;
+  videoUploadFunction?: (file: File) => Promise<string>;
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({
@@ -51,6 +58,12 @@ const Toolbar: React.FC<ToolbarProps> = ({
   setImageUrl,
   handleImageUrlInsert,
   imageUploadFunction,
+  showVideoInput,
+  setShowVideoInput,
+  videoUrl,
+  setVideoUrl,
+  handleVideoUrlInsert,
+  videoUploadFunction,
 }) => {
   // Intentionally minimal state; remove unused link/color states to satisfy linter
   const [showTabsDropdown, setShowTabsDropdown] = useState(false);
@@ -316,12 +329,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
 
         <div className="relative">
           <MenuButton
-            onClick={onVideoUpload}
-            title={
-              isVideoUploading
-                ? "Upload Video to Firebase"
-                : "Upload Video (Base64)"
-            }
+            onClick={() => setShowVideoInput(!showVideoInput)}
+            title="Insert Video"
             className={isVideoUploading ? "opacity-50" : ""}
           >
             {isVideoUploading ? (
@@ -333,9 +342,111 @@ const Toolbar: React.FC<ToolbarProps> = ({
           {isVideoUploading && (
             <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-600 rounded-full animate-pulse"></div>
           )}
-          {!onVideoUpload && (
-            <div className="absolute top-full mt-1 left-0 bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-50">
-              Video upload not available
+          {showVideoInput && (
+            <div
+              className={`absolute top-full mt-1 right-0 z-10 bg-white border border-gray-300 rounded-lg p-2 shadow-lg min-w-80 video-input-container ${
+                isVideoUploading ? "opacity-75" : ""
+              }`}
+            >
+              <div className="space-y-3">
+                {/* Header with close button */}
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-medium text-gray-900">
+                    Insert Video
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setShowVideoInput(false)}
+                    className={`text-gray-400 hover:text-gray-600 ${
+                      isVideoUploading ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                    disabled={isVideoUploading}
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    YouTube or Video URL
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      value={videoUrl}
+                      onChange={(e) => setVideoUrl(e.target.value)}
+                      placeholder="https://youtube.com/watch?v=… or .mp4"
+                      className={`flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                        isVideoUploading ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
+                      disabled={isVideoUploading}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleVideoUrlInsert();
+                        }
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      onClick={handleVideoUrlInsert}
+                      size="sm"
+                      className="px-4 py-2"
+                      disabled={!videoUrl.trim() || isVideoUploading}
+                    >
+                      Insert
+                    </Button>
+                  </div>
+
+                  {/* YouTube Preview */}
+                  {getYouTubeEmbedUrl(videoUrl.trim()) && (
+                    <div className="mt-2 p-2 border border-gray-200 rounded bg-gray-50">
+                      <p className="text-xs text-gray-600 mb-2">Preview:</p>
+                      <div
+                        className="relative w-full rounded border overflow-hidden"
+                        style={{ aspectRatio: "16 / 9" }}
+                      >
+                        <iframe
+                          src={getYouTubeEmbedUrl(videoUrl.trim()) || ""}
+                          title="YouTube preview"
+                          className="absolute inset-0 w-full h-full"
+                          frameBorder={0}
+                          allowFullScreen
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="border-t pt-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Or Upload Video
+                  </label>
+                  <Button
+                    type="button"
+                    onClick={onVideoUpload}
+                    size="sm"
+                    variant="outline"
+                    className="w-full"
+                    disabled={isVideoUploading}
+                  >
+                    {isVideoUploading ? (
+                      <div className="flex items-center gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                        <span>Uploading...</span>
+                      </div>
+                    ) : videoUploadFunction ? (
+                      "Choose File"
+                    ) : (
+                      "Choose File (Base64)"
+                    )}
+                  </Button>
+                  {!videoUploadFunction && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      No upload service provided — files embed as Base64.
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </div>

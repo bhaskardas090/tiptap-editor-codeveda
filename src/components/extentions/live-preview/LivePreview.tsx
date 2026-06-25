@@ -15,7 +15,9 @@ export interface LivePreviewAttributes {
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     livePreview: {
-      insertLivePreview: (options?: Partial<LivePreviewAttributes>) => ReturnType;
+      insertLivePreview: (
+        options?: Partial<LivePreviewAttributes>,
+      ) => ReturnType;
     };
   }
 }
@@ -45,15 +47,16 @@ export const LivePreview = Node.create({
         parseHTML: (element) => readPart(element, "js") || DEFAULT_JS,
       },
       height: {
-        default: "400px",
-        parseHTML: (element) => element.getAttribute("data-height") || "400px",
+        default: "auto",
+        parseHTML: (element) => element.getAttribute("data-height") || "auto",
         renderHTML: (attributes) => ({
           "data-height": attributes.height,
         }),
       },
       title: {
-        default: "Live Preview",
-        parseHTML: (element) => element.getAttribute("data-title") || "Live Preview",
+        default: "Interactive view",
+        parseHTML: (element) =>
+          element.getAttribute("data-title") || "Interactive view",
         renderHTML: (attributes) => ({
           "data-title": attributes.title,
         }),
@@ -99,8 +102,8 @@ export const LivePreview = Node.create({
               html: options.html ?? DEFAULT_HTML,
               css: options.css ?? DEFAULT_CSS,
               js: options.js ?? DEFAULT_JS,
-              height: options.height ?? "400px",
-              title: options.title ?? "Live Preview",
+              height: options.height ?? "auto",
+              title: options.title ?? "Interactive view",
               pendingEdit: options.pendingEdit ?? false,
             },
           });

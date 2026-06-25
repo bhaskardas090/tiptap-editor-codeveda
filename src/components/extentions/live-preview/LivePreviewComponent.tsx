@@ -1,15 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
 import { Button } from "../../ui/button";
-import {
-  Settings,
-  Trash2,
-  Play,
-  Maximize,
-  Minimize,
-  Code2,
-  Eye,
-} from "lucide-react";
+import { Settings, Trash2, Play, Code2, Eye } from "lucide-react";
 import { buildSrcDoc } from "./utils";
 
 type CodeTab = "html" | "css" | "js";
@@ -29,6 +21,54 @@ const CODE_TABS: { id: CodeTab; label: string }[] = [
   { id: "js", label: "JS" },
 ];
 
+const DEFAULT_TITLE = "Interactive view";
+// Default: size the preview to fit its content. An explicit value in the
+// height input overrides this.
+const DEFAULT_HEIGHT = "auto";
+
+/**
+ * Whether a height value means "fit the content" rather than a fixed size.
+ * Empty / "auto" / "fit"(-content) / "max"(-content) are treated as auto-fit,
+ * in which case the preview is sized from the height the iframe reports.
+ */
+const isAutoHeight = (value: string): boolean => {
+  const v = (value || "").trim().toLowerCase();
+  return (
+    v === "" ||
+    v === "auto" ||
+    v === "fit" ||
+    v === "fit-content" ||
+    v === "max" ||
+    v === "max-content"
+  );
+};
+
+/**
+ * Normalizes an explicit height value into a valid CSS dimension.
+ * Accepts:
+ *  - plain numbers ("400" -> "400px")
+ *  - explicit units ("400px", "80%", "50vh", "20rem", ...) -> used as-is
+ *  - content keyword "min"/"min-content"
+ */
+const normalizeHeight = (value: string): string => {
+  const v = (value || "").trim();
+  if (!v) return DEFAULT_HEIGHT;
+
+  // Plain number -> pixels
+  if (/^\d+(\.\d+)?$/.test(v)) return `${v}px`;
+
+  const keyword = v.toLowerCase();
+  if (keyword === "min" || keyword === "min-content") return "min-content";
+
+  // Already a valid CSS length/percentage (e.g. "400px", "80%", "50vh")
+  if (/^\d+(\.\d+)?(px|%|em|rem|vh|vw|vmin|vmax|ch|pt|pc|cm|mm|in)$/i.test(v)) {
+    return v;
+  }
+
+  // Fallback: hand off as-is (covers calc(), clamp(), etc.)
+  return v;
+};
+
 const LivePreviewComponent: React.FC<NodeViewProps> = ({
   node,
   updateAttributes,
@@ -39,15 +79,16 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
   const [activeTab, setActiveTab] = useState<CodeTab>("html");
   const [editPanel, setEditPanel] = useState<EditPanel>("code");
   const [previewKey, setPreviewKey] = useState(0);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [measuredHeight, setMeasuredHeight] = useState<number | null>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const iframeRef = React.useRef<HTMLIFrameElement | null>(null);
 
   const [draft, setDraft] = useState<LivePreviewAttrs>({
     html: node.attrs.html || "",
     css: node.attrs.css || "",
     js: node.attrs.js || "",
-    height: node.attrs.height || "400px",
-    title: node.attrs.title || "Live Preview",
+    height: node.attrs.height || DEFAULT_HEIGHT,
+    title: node.attrs.title || DEFAULT_TITLE,
   });
 
   const [isEditable, setIsEditable] = useState(editor?.isEditable ?? false);
@@ -89,8 +130,8 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
       html: node.attrs.html || "",
       css: node.attrs.css || "",
       js: node.attrs.js || "",
-      height: node.attrs.height || "400px",
-      title: node.attrs.title || "Live Preview",
+      height: node.attrs.height || DEFAULT_HEIGHT,
+      title: node.attrs.title || DEFAULT_TITLE,
     });
     setActiveTab("html");
     setEditPanel("code");
@@ -109,8 +150,8 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
       html: node.attrs.html || "",
       css: node.attrs.css || "",
       js: node.attrs.js || "",
-      height: node.attrs.height || "400px",
-      title: node.attrs.title || "Live Preview",
+      height: node.attrs.height || DEFAULT_HEIGHT,
+      title: node.attrs.title || DEFAULT_TITLE,
     });
     setIsEditing(false);
   };
@@ -124,41 +165,53 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
     setDraft((prev) => ({ ...prev, [field]: value }));
   };
 
-  const toggleFullscreen = () => {
-    const el = containerRef.current;
-    if (!el) return;
-
-    if (!isFullscreen) {
-      el.requestFullscreen?.();
-    } else {
-      document.exitFullscreen?.();
-    }
-  };
-
+  // Listen for the height the active iframe reports about its own content so
+  // we can size the preview to fit when no explicit height is set.
   useEffect(() => {
-    const onFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
+    const onMessage = (event: MessageEvent) => {
+      if (!iframeRef.current || event.source !== iframeRef.current.contentWindow) {
+        return;
+      }
+      const data = event.data;
+      if (
+        data &&
+        data.type === "live-preview-height" &&
+        typeof data.height === "number"
+      ) {
+        setMeasuredHeight(data.height);
+      }
     };
-    document.addEventListener("fullscreenchange", onFullscreenChange);
-    return () => document.removeEventListener("fullscreenchange", onFullscreenChange);
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
   }, []);
 
-  const renderPreviewIframe = (srcDoc: string, height: string, key: number) => (
-    <iframe
-      key={key}
-      title={node.attrs.title || "Live Preview"}
-      srcDoc={srcDoc}
-      sandbox="allow-scripts allow-modals"
-      className="live-preview-iframe"
-      style={{
-        width: "100%",
-        height: isFullscreen ? "100vh" : height,
-        border: "none",
-        borderRadius: 0,
-        display: "block",
-      }}
-    />
-  );
+  const renderPreviewIframe = (srcDoc: string, height: string, key: number) => {
+    const auto = isAutoHeight(height);
+    const resolvedHeight = auto
+      ? measuredHeight != null
+        ? `${measuredHeight}px`
+        : "auto"
+      : normalizeHeight(height);
+
+    return (
+      <iframe
+        key={key}
+        ref={iframeRef}
+        title={node.attrs.title || DEFAULT_TITLE}
+        srcDoc={srcDoc}
+        sandbox="allow-scripts allow-modals"
+        className="live-preview-iframe"
+        scrolling={auto ? "no" : "auto"}
+        style={{
+          width: "100%",
+          height: resolvedHeight,
+          border: "none",
+          borderRadius: 0,
+          display: "block",
+        }}
+      />
+    );
+  };
 
   if (isEditing) {
     return (
@@ -224,7 +277,7 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
                     type="text"
                     value={draft.height}
                     onChange={(e) => updateDraftField("height", e.target.value)}
-                    placeholder="400px"
+                    placeholder="400, 400px, 80%, fit-content, max-content"
                   />
                 </label>
                 <label className="live-preview-meta-field">
@@ -233,7 +286,7 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
                     type="text"
                     value={draft.title}
                     onChange={(e) => updateDraftField("title", e.target.value)}
-                    placeholder="Live Preview"
+                    placeholder={DEFAULT_TITLE}
                   />
                 </label>
               </div>
@@ -288,44 +341,11 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
               type="button"
               size="sm"
               variant="ghost"
-              className="h-8 w-8 p-0"
-              title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
-              onClick={toggleFullscreen}
-            >
-              {isFullscreen ? (
-                <Minimize className="h-4 w-4" />
-              ) : (
-                <Maximize className="h-4 w-4" />
-              )}
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
               className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
               title="Delete"
               onClick={() => deleteNode()}
             >
               <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
-
-        {!isEditable && (
-          <div className="live-preview-controls live-preview-controls-readonly">
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              className="h-8 w-8 p-0"
-              title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
-              onClick={toggleFullscreen}
-            >
-              {isFullscreen ? (
-                <Minimize className="h-4 w-4" />
-              ) : (
-                <Maximize className="h-4 w-4" />
-              )}
             </Button>
           </div>
         )}

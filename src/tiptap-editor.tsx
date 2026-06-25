@@ -35,6 +35,7 @@ import {
   ColumnLayout,
   Column,
 } from "./components/extentions";
+import { isYouTubeUrl } from "./components/extentions/video/videoUtils";
 
 interface TiptapProps {
   onImageUpload?: (file: File) => Promise<string>; // Function to upload image and return URL
@@ -55,6 +56,8 @@ const Tiptap: React.FC<TiptapProps> = ({
 }) => {
   const [imageUrl, setImageUrl] = useState("");
   const [showImageInput, setShowImageInput] = useState(false);
+  const [videoUrl, setVideoUrl] = useState("");
+  const [showVideoInput, setShowVideoInput] = useState(false);
   const [, forceUpdate] = useState({});
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [isImageUploading, setIsImageUploading] = useState(false);
@@ -414,6 +417,23 @@ const Tiptap: React.FC<TiptapProps> = ({
     };
   }, [showImageInput]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest(".video-input-container")) {
+        setShowVideoInput(false);
+      }
+    };
+
+    if (showVideoInput) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showVideoInput]);
+
   const handleImageUpload = useCallback(async () => {
     const input = document.createElement("input");
     input.type = "file";
@@ -446,12 +466,33 @@ const Tiptap: React.FC<TiptapProps> = ({
     }
   }, [editor, imageUrl]);
 
+  const handleVideoUrlInsert = useCallback(() => {
+    const url = videoUrl.trim();
+    if (!url) return;
+
+    editor
+      ?.chain()
+      .focus()
+      .setVideo({
+        src: url,
+        type: isYouTubeUrl(url) ? "youtube" : "video/mp4",
+        title: "",
+      })
+      .run();
+
+    setVideoUrl("");
+    setShowVideoInput(false);
+  }, [editor, videoUrl]);
+
   const handleVideoUpload = useCallback(async () => {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "video/*";
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        setShowVideoInput(false);
+      }
       if (file && onVideoUpload) {
         try {
           setIsVideoUploading(true);
@@ -566,6 +607,12 @@ const Tiptap: React.FC<TiptapProps> = ({
         setImageUrl={setImageUrl}
         handleImageUrlInsert={handleImageUrlInsert}
         imageUploadFunction={onImageUpload}
+        showVideoInput={showVideoInput}
+        setShowVideoInput={setShowVideoInput}
+        videoUrl={videoUrl}
+        setVideoUrl={setVideoUrl}
+        handleVideoUrlInsert={handleVideoUrlInsert}
+        videoUploadFunction={onVideoUpload}
       />
 
       {/* Editor Content */}

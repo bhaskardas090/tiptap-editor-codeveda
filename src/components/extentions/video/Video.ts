@@ -1,4 +1,10 @@
 import { Node, mergeAttributes } from "@tiptap/core";
+import { ReactNodeViewRenderer } from "@tiptap/react";
+import VideoComponent from "./VideoComponent";
+import { getYouTubeEmbedUrl } from "./videoUtils";
+
+const YOUTUBE_IFRAME_ALLOW =
+  "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
 
 export interface VideoOptions {
   inline: boolean;
@@ -44,7 +50,8 @@ export const Video = Node.create<VideoOptions>({
     return {
       src: {
         default: null,
-        parseHTML: (element) => element.getAttribute("src"),
+        parseHTML: (element) =>
+          element.getAttribute("src") || element.getAttribute("data-src"),
         renderHTML: (attributes) => {
           if (!attributes.src) {
             return {};
@@ -70,7 +77,8 @@ export const Video = Node.create<VideoOptions>({
       },
       title: {
         default: null,
-        parseHTML: (element) => element.getAttribute("title"),
+        parseHTML: (element) =>
+          element.getAttribute("title") || element.getAttribute("data-title"),
         renderHTML: (attributes) => {
           if (!attributes.title) {
             return {};
@@ -87,6 +95,16 @@ export const Video = Node.create<VideoOptions>({
   parseHTML() {
     return [
       {
+        tag: "div[data-video='youtube']",
+        getAttrs: (element) => {
+          const el = element as HTMLElement;
+          return {
+            src: el.getAttribute("data-src"),
+            title: el.getAttribute("data-title"),
+          };
+        },
+      },
+      {
         tag: "video",
       },
     ];
@@ -102,6 +120,33 @@ export const Video = Node.create<VideoOptions>({
       ];
     }
 
+    const youtubeEmbedUrl = getYouTubeEmbedUrl(src);
+
+    if (youtubeEmbedUrl) {
+      return [
+        "div",
+        mergeAttributes(
+          {
+            class: "video-youtube-embed",
+            "data-video": "youtube",
+            "data-src": src,
+          },
+          title ? { "data-title": title } : {}
+        ),
+        [
+          "iframe",
+          {
+            src: youtubeEmbedUrl,
+            title: title || "YouTube video",
+            frameborder: "0",
+            allow: YOUTUBE_IFRAME_ALLOW,
+            allowfullscreen: "true",
+            loading: "lazy",
+          },
+        ],
+      ];
+    }
+
     return [
       "video",
       mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {
@@ -111,6 +156,10 @@ export const Video = Node.create<VideoOptions>({
       ["source", { src, type: type || "video/mp4" }],
       title ? title : "Your browser does not support the video tag.",
     ];
+  },
+
+  addNodeView() {
+    return ReactNodeViewRenderer(VideoComponent);
   },
 
   addCommands() {
