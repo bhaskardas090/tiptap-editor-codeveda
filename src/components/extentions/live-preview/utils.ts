@@ -55,7 +55,24 @@ ${html}
     ro.observe(document.documentElement);
     if (document.body) ro.observe(document.body);
   }
-  setTimeout(postHeight, 50);
+  // The parent's message listener can attach late (SSR / hydration /
+  // StrictMode double-mount), so a single post can be missed. Re-post a few
+  // times so a late-attaching parent still receives the content height.
+  [0, 50, 150, 300, 600, 1000].forEach(function (delay) {
+    setTimeout(postHeight, delay);
+  });
+  if (typeof requestAnimationFrame !== "undefined") {
+    requestAnimationFrame(postHeight);
+  }
+  // Re-report once web fonts settle, since they change content height.
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(postHeight).catch(function () {});
+  }
+  // Respond on demand: the parent requests the height after the iframe's
+  // onLoad fires, which is race-proof even if the parent attached late.
+  window.addEventListener("message", function (e) {
+    if (e.data && e.data.type === "live-preview-request-height") postHeight();
+  });
 })();<\/script>
 </body>
 </html>`;

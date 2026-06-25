@@ -202,6 +202,15 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
         sandbox="allow-scripts allow-modals"
         className="live-preview-iframe"
         scrolling={auto ? "no" : "auto"}
+        onLoad={(e) => {
+          // Request the content height once the iframe has loaded. onLoad is
+          // race-proof even when our message listener attaches late (SSR /
+          // hydration / StrictMode), so auto-fit works outside the editor too.
+          e.currentTarget.contentWindow?.postMessage(
+            { type: "live-preview-request-height" },
+            "*"
+          );
+        }}
         style={{
           width: "100%",
           height: resolvedHeight,
