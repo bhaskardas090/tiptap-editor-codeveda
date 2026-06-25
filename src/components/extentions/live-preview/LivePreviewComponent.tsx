@@ -187,11 +187,36 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
 
   const renderPreviewIframe = (srcDoc: string, height: string, key: number) => {
     const auto = isAutoHeight(height);
-    const resolvedHeight = auto
-      ? measuredHeight != null
-        ? `${measuredHeight}px`
-        : "auto"
-      : normalizeHeight(height);
+
+    // Resolve the iframe height. A configured pixel height is treated as a
+    // *minimum*: when the content is taller than it (e.g. text wraps taller on
+    // a narrow/mobile width), the frame grows to fit instead of clipping and
+    // showing an inner scrollbar. `scroll` stays false whenever we've sized the
+    // frame to its content, so there is nothing to scroll.
+    let resolvedHeight: string;
+    let scroll = false;
+
+    if (measuredHeight != null) {
+      if (auto) {
+        resolvedHeight = `${measuredHeight}px`;
+      } else {
+        const normalized = normalizeHeight(height);
+        const px = /^\d+(\.\d+)?px$/.test(normalized)
+          ? parseFloat(normalized)
+          : null;
+        if (px != null) {
+          resolvedHeight = `${Math.max(px, measuredHeight)}px`;
+        } else {
+          // Non-pixel heights (%, vh, calc(), ...) are respected as authored.
+          resolvedHeight = normalized;
+          scroll = true;
+        }
+      }
+    } else {
+      // Height not measured yet — fall back to the authored value.
+      resolvedHeight = auto ? "auto" : normalizeHeight(height);
+      scroll = !auto;
+    }
 
     return (
       <iframe
@@ -201,7 +226,7 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
         srcDoc={srcDoc}
         sandbox="allow-scripts allow-modals"
         className="live-preview-iframe"
-        scrolling={auto ? "no" : "auto"}
+        scrolling={scroll ? "auto" : "no"}
         onLoad={(e) => {
           // Request the content height once the iframe has loaded. onLoad is
           // race-proof even when our message listener attaches late (SSR /
