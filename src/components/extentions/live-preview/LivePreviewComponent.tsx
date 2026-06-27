@@ -3,6 +3,7 @@ import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
 import { Button } from "../../ui/button";
 import { Settings, Trash2, Play, Code2, Eye } from "lucide-react";
 import { buildSrcDoc } from "./utils";
+import { useLivePreviewDarkMode } from "./dark-mode";
 
 type CodeTab = "html" | "css" | "js";
 type EditPanel = "code" | "preview";
@@ -93,6 +94,12 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
 
   const [isEditable, setIsEditable] = useState(editor?.isEditable ?? false);
 
+  const darkMode = useLivePreviewDarkMode();
+  // Captured once so the baked srcDoc (initial paint) stays stable; later
+  // toggles are pushed to the live iframe via postMessage, avoiding a reload
+  // that would reset the infographic's interactive state.
+  const initialDarkRef = React.useRef(darkMode);
+
   useEffect(() => {
     if (node.attrs.pendingEdit && isEditable) {
       setIsEditing(true);
@@ -115,14 +122,29 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
   }, [editor]);
 
   const savedSrcDoc = useMemo(
-    () => buildSrcDoc(node.attrs.html, node.attrs.css, node.attrs.js),
+    () =>
+      buildSrcDoc(
+        node.attrs.html,
+        node.attrs.css,
+        node.attrs.js,
+        initialDarkRef.current
+      ),
     [node.attrs.html, node.attrs.css, node.attrs.js]
   );
 
   const draftSrcDoc = useMemo(
-    () => buildSrcDoc(draft.html, draft.css, draft.js),
+    () => buildSrcDoc(draft.html, draft.css, draft.js, initialDarkRef.current),
     [draft.html, draft.css, draft.js]
   );
+
+  // Push dark-mode changes to the live iframe without rebuilding its srcDoc, so
+  // the preview toggles in place and keeps its interactive state.
+  useEffect(() => {
+    iframeRef.current?.contentWindow?.postMessage(
+      { type: "live-preview-darkmode", darkMode },
+      "*"
+    );
+  }, [darkMode, previewKey, isEditing, editPanel]);
 
   const openEditor = () => {
     if (!isEditable) return;
@@ -231,8 +253,11 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
           // Request the content height once the iframe has loaded. onLoad is
           // race-proof even when our message listener attaches late (SSR /
           // hydration / StrictMode), so auto-fit works outside the editor too.
-          e.currentTarget.contentWindow?.postMessage(
-            { type: "live-preview-request-height" },
+          const win = e.currentTarget.contentWindow;
+          win?.postMessage({ type: "live-preview-request-height" }, "*");
+          // Re-assert dark mode on (re)load, e.g. after a previewKey reload.
+          win?.postMessage(
+            { type: "live-preview-darkmode", darkMode },
             "*"
           );
         }}

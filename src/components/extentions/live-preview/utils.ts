@@ -22,11 +22,21 @@ export const DEFAULT_JS = `document.querySelector('.demo h1')?.addEventListener(
   alert('Hello from live preview!');
 });`;
 
-export function buildSrcDoc(html: string, css: string, js: string): string {
+export function buildSrcDoc(
+  html: string,
+  css: string,
+  js: string,
+  darkMode = false
+): string {
   const safeJs = js.replace(/<\/script>/gi, "<\\/script>");
+  // Baked into the initial markup so there is no light->dark flash on first
+  // paint. Explicit "true"/"false" so content can branch deterministically
+  // without falling back to a cookie it can't read. Live toggles then arrive
+  // via the postMessage below.
+  const darkAttr = ` data-darkmode="${darkMode ? "true" : "false"}"`;
 
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en"${darkAttr}>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,7 +47,7 @@ export function buildSrcDoc(html: string, css: string, js: string): string {
     ${css}
   </style>
 </head>
-<body>
+<body${darkAttr}>
 ${html}
 <script>${safeJs}<\/script>
 <script>(function () {
@@ -68,10 +78,28 @@ ${html}
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(postHeight).catch(function () {});
   }
+  function setDarkMode(on) {
+    var el = document.documentElement;
+    if (on) {
+      el.setAttribute("data-darkmode", "true");
+      if (document.body) document.body.setAttribute("data-darkmode", "true");
+    } else {
+      el.removeAttribute("data-darkmode");
+      if (document.body) document.body.removeAttribute("data-darkmode");
+    }
+    postHeight();
+  }
   // Respond on demand: the parent requests the height after the iframe's
-  // onLoad fires, which is race-proof even if the parent attached late.
+  // onLoad fires (race-proof even if the parent attached late) and pushes the
+  // current dark-mode state, since the iframe can't read the cookie itself.
   window.addEventListener("message", function (e) {
-    if (e.data && e.data.type === "live-preview-request-height") postHeight();
+    var d = e.data;
+    if (!d || typeof d !== "object") return;
+    if (d.type === "live-preview-request-height") postHeight();
+    // Accept both the documented { darkMode } shape and the internal { value }.
+    if (d.type === "live-preview-darkmode" || "darkMode" in d) {
+      setDarkMode(!!(d.darkMode !== undefined ? d.darkMode : d.value));
+    }
   });
 })();<\/script>
 </body>

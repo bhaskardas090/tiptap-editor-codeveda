@@ -1,5 +1,6 @@
 import React, { useCallback, useState, useEffect, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
+import { LivePreviewDarkModeProvider } from "./components/extentions/live-preview/dark-mode";
 import {
   StarterKitExtension,
   TableExtension,
@@ -44,6 +45,10 @@ interface TiptapProps {
   onVideoDelete?: (url: string) => Promise<void>; // Function to delete video by URL
   content?: string;
   setEditorContent?: (content: { html: string; json: any }) => void;
+  /** Force Live Preview dark mode. When omitted, the `darkMode` cookie is used. */
+  darkMode?: boolean;
+  /** Cookie consulted for dark mode when `darkMode` is not provided. */
+  darkModeCookieName?: string;
 }
 
 const Tiptap: React.FC<TiptapProps> = ({
@@ -53,6 +58,8 @@ const Tiptap: React.FC<TiptapProps> = ({
   onVideoDelete,
   content,
   setEditorContent,
+  darkMode,
+  darkModeCookieName,
 }) => {
   const [imageUrl, setImageUrl] = useState("");
   const [showImageInput, setShowImageInput] = useState(false);
@@ -617,7 +624,12 @@ const Tiptap: React.FC<TiptapProps> = ({
 
       {/* Editor Content */}
       <div className="relative border border-gray-300 border-t-1 rounded-t-lg rounded-b-lg min-h-[400px]">
-        <EditorContent editor={editor} className="tiptap-editor" />
+        <LivePreviewDarkModeProvider
+          darkMode={darkMode}
+          darkModeCookieName={darkModeCookieName}
+        >
+          <EditorContent editor={editor} className="tiptap-editor" />
+        </LivePreviewDarkModeProvider>
 
         {/* Image Upload Loader Overlay */}
         {isImageUploading && (

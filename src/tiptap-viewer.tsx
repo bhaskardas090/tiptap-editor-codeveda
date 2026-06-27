@@ -27,15 +27,22 @@ import {
   ColumnLayout,
   Column,
 } from "./components/extentions";
+import { LivePreviewDarkModeProvider } from "./components/extentions/live-preview/dark-mode";
 
 const Tiptap = ({
   styles,
   editorContent,
   immediatelyRender = false,
+  darkMode,
+  darkModeCookieName,
 }: {
   styles?: string;
   editorContent?: string;
   immediatelyRender?: boolean;
+  /** Force Live Preview dark mode. When omitted, the `darkMode` cookie is used. */
+  darkMode?: boolean;
+  /** Cookie consulted for dark mode when `darkMode` is not provided. */
+  darkModeCookieName?: string;
 }) => {
   const [, forceUpdate] = useState({});
   const [isReadOnly] = useState(true);
@@ -112,11 +119,16 @@ const Tiptap = ({
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-4">
-      {/* <div className="relative border border-gray-300 rounded-lg"> */}
-      <EditorContent editor={editor} className="tiptap-editor" />
-      {/* </div> */}
-    </div>
+    <LivePreviewDarkModeProvider
+      darkMode={darkMode}
+      darkModeCookieName={darkModeCookieName}
+    >
+      <div className="w-full max-w-6xl mx-auto p-4">
+        {/* <div className="relative border border-gray-300 rounded-lg"> */}
+        <EditorContent editor={editor} className="tiptap-editor" />
+        {/* </div> */}
+      </div>
+    </LivePreviewDarkModeProvider>
   );
 };
 
