@@ -13,6 +13,9 @@
 @use "@/components/extentions/core-elements/core-elements.scss";
 @use "@/components/extentions/ui-components/ui-components.scss";
 
+/* Dark mode overrides — imported last so they win over the defaults above. */
+@use "@/styles/dark-mode.scss";
+
 .tiptap-editor {
   outline: none;
 }

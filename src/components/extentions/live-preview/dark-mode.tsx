@@ -25,19 +25,14 @@ const readCookieDarkMode = (cookieName: string): boolean => {
   return match ? truthy(decodeURIComponent(match[1])) : false;
 };
 
-interface ProviderProps {
-  /** Explicit override. When defined it wins over the cookie. */
-  darkMode?: boolean;
-  /** Cookie consulted when `darkMode` is not provided. */
-  darkModeCookieName?: string;
-  children: React.ReactNode;
-}
-
-export const LivePreviewDarkModeProvider: React.FC<ProviderProps> = ({
-  darkMode,
-  darkModeCookieName = DEFAULT_DARK_MODE_COOKIE,
-  children,
-}) => {
+/**
+ * Resolve the effective dark-mode flag. When `darkMode` is provided it wins;
+ * otherwise the value is read (and kept in sync) from the cookie.
+ */
+export const useResolvedDarkMode = (
+  darkMode?: boolean,
+  darkModeCookieName: string = DEFAULT_DARK_MODE_COOKIE
+): boolean => {
   const [cookieValue, setCookieValue] = useState<boolean>(() =>
     readCookieDarkMode(darkModeCookieName)
   );
@@ -58,7 +53,23 @@ export const LivePreviewDarkModeProvider: React.FC<ProviderProps> = ({
     };
   }, [darkMode, darkModeCookieName]);
 
-  const effective = darkMode !== undefined ? darkMode : cookieValue;
+  return darkMode !== undefined ? darkMode : cookieValue;
+};
+
+interface ProviderProps {
+  /** Explicit override. When defined it wins over the cookie. */
+  darkMode?: boolean;
+  /** Cookie consulted when `darkMode` is not provided. */
+  darkModeCookieName?: string;
+  children: React.ReactNode;
+}
+
+export const LivePreviewDarkModeProvider: React.FC<ProviderProps> = ({
+  darkMode,
+  darkModeCookieName = DEFAULT_DARK_MODE_COOKIE,
+  children,
+}) => {
+  const effective = useResolvedDarkMode(darkMode, darkModeCookieName);
 
   return (
     <DarkModeContext.Provider value={effective}>

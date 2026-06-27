@@ -1,6 +1,9 @@
 import React, { useCallback, useState, useEffect, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
-import { LivePreviewDarkModeProvider } from "./components/extentions/live-preview/dark-mode";
+import {
+  LivePreviewDarkModeProvider,
+  useResolvedDarkMode,
+} from "./components/extentions/live-preview/dark-mode";
 import {
   StarterKitExtension,
   TableExtension,
@@ -61,6 +64,13 @@ const Tiptap: React.FC<TiptapProps> = ({
   darkMode,
   darkModeCookieName,
 }) => {
+  const resolvedDarkMode = useResolvedDarkMode(darkMode, darkModeCookieName);
+  // Local override so the in-editor toggle can flip the theme at runtime,
+  // while still following the prop/cookie when those change.
+  const [isDarkMode, setIsDarkMode] = useState(resolvedDarkMode);
+  useEffect(() => {
+    setIsDarkMode(resolvedDarkMode);
+  }, [resolvedDarkMode]);
   const [imageUrl, setImageUrl] = useState("");
   const [showImageInput, setShowImageInput] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
@@ -588,7 +598,11 @@ const Tiptap: React.FC<TiptapProps> = ({
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-4">
+    <div
+      className={`w-full max-w-6xl mx-auto p-4${
+        isDarkMode ? " dark tiptap-dark" : ""
+      }`}
+    >
       {/* Debug Info - Remove this later */}
       {editor && <DebugInfo editor={editor} />}
 
@@ -598,6 +612,8 @@ const Tiptap: React.FC<TiptapProps> = ({
         isReadOnly={isReadOnly}
         setIsReadOnly={setIsReadOnly}
         onLogContent={handleLogContent}
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={() => setIsDarkMode((prev) => !prev)}
       />
 
       {/* Toolbar */}
@@ -624,10 +640,7 @@ const Tiptap: React.FC<TiptapProps> = ({
 
       {/* Editor Content */}
       <div className="relative border border-gray-300 border-t-1 rounded-t-lg rounded-b-lg min-h-[400px]">
-        <LivePreviewDarkModeProvider
-          darkMode={darkMode}
-          darkModeCookieName={darkModeCookieName}
-        >
+        <LivePreviewDarkModeProvider darkMode={isDarkMode}>
           <EditorContent editor={editor} className="tiptap-editor" />
         </LivePreviewDarkModeProvider>
 

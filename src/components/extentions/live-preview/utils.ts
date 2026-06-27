@@ -44,6 +44,12 @@ export function buildSrcDoc(
     *, *::before, *::after { box-sizing: border-box; }
     html, body { margin: 0; }
     body { padding: 12px; }
+    /* Dark-mode default surface so the area around the content isn't white.
+       Declared before author CSS so the author can still override it. */
+    html[data-darkmode="true"], body[data-darkmode="true"] {
+      background-color: #13171f;
+      color: #e5e7eb;
+    }
     ${css}
   </style>
 </head>

@@ -1,0 +1,294 @@
+/* ============================================================================
+   Dark mode overrides
+   Activated by the `tiptap-dark` class on the editor / viewer root wrapper
+   (added when the `darkMode` prop — or the dark-mode cookie — is truthy).
+   The sibling `dark` class lights up the CSS-variable / Tailwind `dark:`
+   styling (shadcn buttons, tooltip, design tokens); the rules below recolor
+   everything in the extensions that uses hard-coded light colors.
+   ========================================================================= */
+
+$dm-bg: #13171f; /* main background */
+$dm-surface: #1a1a1a; /* containers, inputs, menus */
+$dm-elevated: #1e1e1e; /* headers, table headers, blockquote */
+$dm-hover: #2a2a2a; /* hover states */
+$dm-border: #2d2d2d; /* borders / dividers */
+$dm-text: #e5e7eb; /* primary text */
+$dm-text-muted: #9ca3af; /* secondary / muted text */
+$dm-heading: #f3f4f6; /* headings / titles */
+$dm-link: #60a5fa;
+$dm-link-hover: #93c5fd;
+$dm-accent: #3b82f6;
+
+.tiptap-dark {
+  background-color: $dm-bg;
+  color: $dm-text;
+
+  /* Flip the common Tailwind utility colors used by the chrome (toolbar
+     dividers, editor frame, menus, input boxes) so they read on dark. */
+  .border-gray-300 {
+    border-color: $dm-border;
+  }
+
+  /* ----------------------------- Core content ---------------------------- */
+  .tiptap-editor {
+    background-color: $dm-bg;
+    color: $dm-text;
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      color: $dm-heading;
+    }
+
+    p,
+    li {
+      color: $dm-text;
+    }
+
+    blockquote {
+      border-left-color: $dm-accent;
+      color: $dm-text-muted;
+      background-color: $dm-surface;
+    }
+
+    hr {
+      border-top-color: $dm-border;
+    }
+
+    /* Inline code (fenced code blocks already render on a dark surface) */
+    code {
+      background-color: $dm-border;
+      color: #ff7b72;
+    }
+
+    a {
+      color: $dm-link;
+
+      &:hover {
+        color: $dm-link-hover;
+      }
+    }
+
+    .ProseMirror:empty::before,
+    .ProseMirror p.is-editor-empty:first-child::before {
+      color: $dm-text-muted;
+    }
+
+    /* ------------------------------- Tables ------------------------------ */
+    table,
+    th,
+    td,
+    .tableWrapper {
+      border-color: $dm-border;
+    }
+
+    th {
+      background-color: $dm-elevated;
+      color: $dm-heading;
+    }
+
+    td {
+      background-color: $dm-bg;
+      color: $dm-text;
+    }
+
+    .selectedCell {
+      background-color: #1e3a5f !important;
+    }
+
+    /* ----------------------------- Accordions ---------------------------- */
+    .toggle-details,
+    .toggle-container,
+    .simple-accordion-wrapper,
+    .working-accordion {
+      background-color: $dm-surface;
+      border-color: $dm-border;
+    }
+
+    .toggle-summary,
+    .toggle-header-interactive,
+    .accordion-header,
+    .simple-accordion-header,
+    .working-accordion summary {
+      background-color: $dm-elevated;
+      border-bottom-color: $dm-border;
+      color: $dm-text;
+
+      &:hover {
+        background-color: $dm-hover;
+      }
+    }
+
+    .toggle-body,
+    .toggle-content-interactive,
+    .accordion-content,
+    .simple-accordion-content,
+    .working-accordion-content {
+      background-color: $dm-surface;
+    }
+
+    .toggle-title,
+    .toggle-title-display,
+    .accordion-title-display,
+    .simple-accordion-title {
+      color: $dm-text;
+
+      &:hover {
+        background-color: $dm-hover;
+      }
+    }
+
+    .toggle-arrow,
+    .toggle-arrow-btn,
+    .accordion-arrow,
+    .accordion-arrow-btn,
+    .simple-accordion-arrow {
+      color: $dm-text-muted;
+    }
+
+    .toggle-arrow-btn:hover {
+      color: $dm-text;
+      background-color: $dm-hover;
+    }
+
+    .toggle-title-input,
+    .accordion-title-input {
+      background-color: $dm-surface;
+      border-color: $dm-accent;
+      color: $dm-text;
+    }
+
+    .toggle-title:focus {
+      color: $dm-heading;
+    }
+
+    /* ------------------------------ Columns ------------------------------ */
+    div[data-type="column"] {
+      border-color: $dm-border;
+    }
+
+    /* --------------------------- Images / video -------------------------- */
+    img,
+    video,
+    iframe {
+      border-color: $dm-border;
+    }
+
+    .image-caption {
+      color: $dm-text-muted;
+    }
+  }
+
+  /* --------------------------- Video (global) ---------------------------- */
+  .video-container,
+  .video-placeholder {
+    border-color: $dm-border;
+  }
+
+  .video-caption {
+    background-color: $dm-elevated;
+    border-top-color: $dm-border;
+  }
+
+  .video-caption-text,
+  .video-placeholder-content {
+    color: $dm-text-muted;
+  }
+
+  /* ------------------------------- Tabs ---------------------------------- */
+  .tabs-container {
+    border-color: $dm-border;
+  }
+
+  .tabs-header {
+    background-color: $dm-elevated;
+    border-bottom-color: $dm-border;
+  }
+
+  /* ----------------------------- Live preview ---------------------------- */
+  .live-preview-output {
+    background-color: $dm-bg;
+    border-color: $dm-border;
+  }
+
+  /* The iframe element's own background (shows in any gap around content). */
+  .live-preview-iframe {
+    background-color: $dm-bg;
+  }
+
+  .live-preview-editor-header .text-gray-800 {
+    color: $dm-text;
+  }
+
+  .live-preview-controls {
+    background-color: rgba(30, 30, 30, 0.92);
+    border-color: $dm-border;
+  }
+
+  .live-preview-label {
+    background-color: $dm-elevated;
+    color: $dm-text-muted;
+  }
+
+  .live-preview-editor-panel {
+    background-color: #15233b;
+    border-color: $dm-accent;
+  }
+
+  .live-preview-tab {
+    background-color: $dm-elevated;
+    border-color: $dm-border;
+    color: $dm-text;
+
+    &.active {
+      background-color: #2563eb;
+      border-color: #2563eb;
+      color: #fff;
+    }
+  }
+
+  .live-preview-code-input,
+  .live-preview-meta-field input,
+  .live-preview-edit-preview {
+    background-color: $dm-surface;
+    border-color: $dm-border;
+    color: $dm-text;
+  }
+
+  .live-preview-meta-field {
+    color: $dm-text;
+  }
+
+  /* -------------------------------- Toolbar ------------------------------ */
+  .tiptap-toolbar {
+    background-color: rgba(26, 26, 26, 0.95);
+    border-color: $dm-border;
+
+    > div {
+      border-color: $dm-border;
+    }
+  }
+
+  /* ------------------------ Floating / bubble menus ---------------------- */
+  .floating-menu,
+  .bubble-menu,
+  .table-controls,
+  .table-bubble-menu {
+    background-color: $dm-surface !important;
+    border-color: $dm-border !important;
+    color: $dm-text;
+  }
+
+  .table-controls button {
+    background-color: $dm-elevated;
+    border-color: $dm-border;
+    color: $dm-text;
+
+    &:hover {
+      background-color: $dm-hover;
+    }
+  }
+}

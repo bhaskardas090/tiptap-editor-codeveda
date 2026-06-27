@@ -169,12 +169,12 @@ export default function AccordionComponent({
 
   return (
     <NodeViewWrapper
-      className="accordion border border-gray-200 rounded-lg mb-3 overflow-hidden"
+      className="accordion border border-gray-200 dark:border-[#2d2d2d] rounded-lg mb-3 overflow-hidden"
       onKeyDown={handleKeyDown}
     >
       {/* Accordion Header */}
       <div
-        className="accordion-header bg-gray-50 border-b border-gray-200"
+        className="accordion-header bg-gray-50 border-b border-gray-200 dark:bg-[#1e1e1e] dark:border-[#2d2d2d]"
         onClick={toggleAccordion}
       >
         <div className="flex items-center gap-2 px-1">
@@ -185,7 +185,7 @@ export default function AccordionComponent({
               e.stopPropagation();
               toggleAccordion();
             }}
-            className="flex items-center justify-center w-6 h-6 text-gray-600 hover:text-gray-800"
+            className="flex items-center justify-center w-6 h-6 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white"
             title={open ? "Collapse" : "Expand"}
           >
             <span
@@ -206,7 +206,7 @@ export default function AccordionComponent({
               onChange={(e) => setTitle(e.target.value)}
               onBlur={handleTitleSave}
               onKeyDown={handleTitleKeyDown}
-              className="bg-transparent border-b border-gray-300 outline-none font-medium text-gray-800 flex-1 py-1"
+              className="bg-transparent border-b border-gray-300 dark:border-[#3b82f6] outline-none font-medium text-gray-800 dark:text-white flex-1 py-1"
               placeholder="Enter accordion title..."
             />
           ) : (
@@ -219,9 +219,9 @@ export default function AccordionComponent({
                     }
                   : undefined
               }
-              className={`font-medium text-gray-800 flex-1 py-1 ${
+              className={`font-medium text-gray-800 dark:text-white flex-1 py-1 ${
                 isEditable
-                  ? "cursor-text hover:text-blue-600"
+                  ? "cursor-text hover:text-blue-600 dark:hover:text-blue-400"
                   : "cursor-pointer"
               }`}
               title={isEditable ? "Click to edit title" : undefined}
@@ -249,7 +249,7 @@ export default function AccordionComponent({
 
       {/* Accordion Content */}
       {open && (
-        <div className="accordion-content p-3 bg-white">
+        <div className="accordion-content p-3 bg-white dark:bg-[#1a1a1a]">
           <NodeViewContent />
         </div>
       )}
