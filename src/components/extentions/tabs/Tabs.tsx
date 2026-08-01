@@ -2,6 +2,7 @@ import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import TabsComponent from "./TabsComponent";
 import TabItemComponent from "./TabItemComponent";
+import { MAX_TABS, MIN_TABS } from "./constants";
 
 export const Tabs = Node.create({
   name: "tabs",
@@ -84,7 +85,10 @@ export const Tabs = Node.create({
       insertTabs:
         (options = { tabCount: 2 }) =>
         ({ commands }: any) => {
-          const tabCount = Math.min(Math.max(options.tabCount || 2, 2), 6);
+          const tabCount = Math.min(
+            Math.max(options.tabCount || 2, MIN_TABS),
+            MAX_TABS
+          );
           const tabItems = Array.from({ length: tabCount }, (_, index) => ({
             type: "tabItem",
             attrs: { tabIndex: index, title: `Tab ${index + 1}` },
@@ -165,6 +169,42 @@ export const TabItem = Node.create({
 
   addKeyboardShortcuts() {
     return {
+      // Keep "select all" inside the tab the cursor is in, instead of
+      // selecting the whole document.
+      "Mod-a": ({ editor }: any) => {
+        const { state } = editor;
+        const { $from } = state.selection;
+
+        // Innermost enclosing tab item (tabs can be nested inside a tab)
+        let depth = -1;
+        for (let d = $from.depth; d > 0; d--) {
+          if ($from.node(d).type.name === "tabItem") {
+            depth = d;
+            break;
+          }
+        }
+        if (depth === -1) return false;
+
+        // First/last text positions inside the tab item. Using the tab item's
+        // own boundaries would land the selection on block positions, which
+        // cannot hold a text selection.
+        let from = -1;
+        let to = -1;
+        state.doc.nodesBetween(
+          $from.start(depth),
+          $from.end(depth),
+          (child: any, pos: number) => {
+            if (child.isTextblock) {
+              if (from === -1) from = pos + 1;
+              to = pos + child.nodeSize - 1;
+            }
+          }
+        );
+        if (from === -1) return false;
+
+        return editor.commands.setTextSelection({ from, to });
+      },
+
       // The isolating property should handle most splitting prevention
       // These shortcuts provide additional protection
       Enter: () => {

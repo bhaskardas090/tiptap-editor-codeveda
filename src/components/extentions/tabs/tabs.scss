@@ -1,20 +1,75 @@
 /* Tabs Extension Styles */
 
+/* Keep in sync with MAX_TABS in constants.ts */
+$max-tabs: 6;
+
 .tabs-container .tab-content-wrapper {
   position: relative;
 }
 
-/* Hide all tab items by default */
-.tabs-container .tab-item-content {
+/* Hide all tab items by default. The tab items are not direct children of
+   `.tab-content-wrapper` — Tiptap's React node views add wrapper elements in
+   between — so the descendant combinator is required here. */
+.tab-content-wrapper .tab-item-content {
   display: none !important;
 }
 
-/* Show only the active tab */
-.tabs-container[data-active-tab="0"] .tab-item-content[data-tab-index="0"],
-.tabs-container[data-active-tab="1"] .tab-item-content[data-tab-index="1"],
-.tabs-container[data-active-tab="2"] .tab-item-content[data-tab-index="2"],
-.tabs-container[data-active-tab="3"] .tab-item-content[data-tab-index="3"],
-.tabs-container[data-active-tab="4"] .tab-item-content[data-tab-index="4"],
-.tabs-container[data-active-tab="5"] .tab-item-content[data-tab-index="5"] {
-  display: block !important;
+/* Show only the active tab. `data-active-tab` lives on the content wrapper of
+   each tabs node, which keeps sibling tabs components independent. */
+@for $i from 0 through $max-tabs - 1 {
+  .tab-content-wrapper[data-active-tab="#{$i}"]
+    .tab-item-content[data-tab-index="#{$i}"] {
+    display: block !important;
+  }
+}
+
+/* ------------------------------ Tab headers ------------------------------ */
+
+/* The strip of tab buttons scrolls horizontally once the tabs no longer fit,
+   while the action buttons on the right stay pinned. */
+.tabs-container .tabs-header-scroll {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  /* offset parent for the tab buttons, so scrolling the active tab into view
+     can rely on their offsetLeft */
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(107, 114, 128, 0.4) transparent;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(107, 114, 128, 0.4);
+    border-radius: 9999px;
+  }
+}
+
+/* Grow to fill the row while the tabs fit, never shrink below a readable
+   width once they don't (that overflow is what makes the strip scrollable). */
+.tabs-container .tab-header-item {
+  flex: 1 0 auto;
+  min-width: 7.5rem;
+  max-width: 16rem;
+}
+
+.tabs-container .tab-remove-button {
+  opacity: 0;
+  transition: opacity 0.15s ease-in-out;
+}
+
+.tabs-container .tab-header-item:hover .tab-remove-button,
+.tabs-container .tab-header-item .tab-remove-button:focus-visible,
+.tabs-container .tab-header-item[data-active="true"] .tab-remove-button {
+  opacity: 1;
 }

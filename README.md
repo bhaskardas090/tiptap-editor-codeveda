@@ -248,7 +248,7 @@ The editor comes with default Tailwind CSS styles. You can customize the appeara
 - **Tables**: Resizable tables with header support
 - **Code blocks**: Syntax highlighting for multiple languages
 - **Accordions**: Collapsible content sections
-- **Tabs**: Tabbed content organization
+- **Tabs**: Tabbed content organization — add or remove tabs inline (up to 6), rename a tab by double-clicking its title, and the header strip scrolls horizontally when the tabs no longer fit
 - **Iframes**: Embed CodeSandbox, YouTube, etc.
 
 ### Media
