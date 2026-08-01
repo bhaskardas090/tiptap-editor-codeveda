@@ -1,6 +1,7 @@
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import AccordionComponent from "./AccordionComponent"; // we'll define this as a React component
+import { selectAllWithin } from "../core-elements/selectAllWithin";
 
 export const Accordion = Node.create({
   name: "accordion",
@@ -169,6 +170,10 @@ export const AccordionItem = Node.create({
 
   addKeyboardShortcuts() {
     return {
+      // Keep "select all" inside the accordion item the cursor is in, instead
+      // of selecting the whole document.
+      "Mod-a": ({ editor }: any) => selectAllWithin(editor),
+
       // Prevent Enter from splitting accordion items
       Enter: ({ editor }: any) => {
         const { selection } = editor.state;

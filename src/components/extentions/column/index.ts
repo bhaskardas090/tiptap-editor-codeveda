@@ -1,4 +1,5 @@
 import { Node, mergeAttributes, findParentNode } from "@tiptap/core";
+import { selectAllWithin } from "../core-elements/selectAllWithin";
 
 export interface ColumnLayoutOptions {
   HTMLAttributes: Record<string, any>;
@@ -128,6 +129,14 @@ export const Column = Node.create({
   content: "block+",
   isolating: true,
   defining: true,
+
+  addKeyboardShortcuts() {
+    return {
+      // Keep "select all" inside the column the cursor is in, instead of
+      // selecting the whole document.
+      "Mod-a": ({ editor }: any) => selectAllWithin(editor),
+    };
+  },
 
   parseHTML() {
     return [

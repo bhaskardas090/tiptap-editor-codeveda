@@ -6,6 +6,10 @@
   margin: 1rem 0;
 }
 
+.tiptap-editor div[data-type="column-layout"][data-columns="1"] {
+  grid-template-columns: 1fr;
+}
+
 .tiptap-editor div[data-type="column-layout"][data-columns="2"] {
   grid-template-columns: 1fr 1fr;
 }

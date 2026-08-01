@@ -12,6 +12,9 @@ export const SELECT_ALL_BOUNDARIES = [
   "tableCell",
   "tableHeader",
   "tabItem",
+  "column",
+  "accordionItem",
+  "blockquote",
 ] as const;
 
 /**

@@ -19,6 +19,7 @@ import {
   MonitorPlay,
   Code,
   Columns3,
+  RectangleHorizontal,
   AppWindow,
 } from "lucide-react";
 import { Button } from "../../ui/button";
@@ -494,6 +495,16 @@ const Toolbar: React.FC<ToolbarProps> = ({
       </div>
       {/* Layout */}
       <div className="flex gap-1 border-r border-gray-300 pr-2">
+        <MenuButton
+          onClick={() =>
+            editor.chain().focus().insertColumnLayout({ columns: 1 }).run()
+          }
+          title="Insert 1 Column Layout"
+        >
+          <div className="flex items-center gap-1">
+            <RectangleHorizontal className="h-4 w-4" />
+          </div>
+        </MenuButton>
         <MenuButton
           onClick={() =>
             editor.chain().focus().insertColumnLayout({ columns: 2 }).run()
