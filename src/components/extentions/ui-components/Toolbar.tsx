@@ -141,10 +141,10 @@ const Toolbar: React.FC<ToolbarProps> = ({
             editor
               .chain()
               .focus()
-              .insertTable({ rows: 2, cols: 2, withHeaderRow: true })
+              .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
               .run()
           }
-          title="Insert Table (2x2)"
+          title="Insert Table (3x3)"
         >
           <TableIcon className="h-4 w-4" />
         </MenuButton>

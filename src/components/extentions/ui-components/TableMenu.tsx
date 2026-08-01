@@ -1,7 +1,7 @@
 import React from "react";
 import { Editor } from "@tiptap/react";
 import MenuButton from "./MenuButton";
-import { Plus, Minus, Trash2 } from "lucide-react";
+import { Plus, Minus, Trash2, PanelTop } from "lucide-react";
 
 interface TableMenuProps {
   editor: Editor;
@@ -93,6 +93,21 @@ const TableMenu: React.FC<TableMenuProps> = ({
           <div className="flex items-center gap-1">
             <Minus className="h-3 w-3" />
             <span className="text-xs">Row</span>
+          </div>
+        </MenuButton>
+        <div className="h-6 w-px bg-gray-300 mx-1" />
+
+        {/* Turns the header row into a normal row (and back), so a table can
+            be used without a header at all. */}
+        <MenuButton
+          onClick={() => editor.chain().focus().toggleHeaderRow().run()}
+          isActive={editor.isActive("tableHeader")}
+          title="Toggle header row"
+          className="h-8 w-auto px-2"
+        >
+          <div className="flex items-center gap-1">
+            <PanelTop className="h-3 w-3" />
+            <span className="text-xs">Header</span>
           </div>
         </MenuButton>
         <MenuButton

@@ -99,6 +99,40 @@ $dm-accent: #3b82f6;
       background-color: #1e3a5f !important;
     }
 
+    /* The node view's own horizontal scrollbar under a wide table. */
+    .table-scrollbar {
+      background: $dm-elevated;
+      border-top-color: $dm-border;
+    }
+
+    .table-scrollbar-thumb {
+      background: #4b5563;
+    }
+
+    .table-scrollbar:hover .table-scrollbar-thumb,
+    .tableWrapper.is-scrollbar-dragging .table-scrollbar-thumb {
+      background: #9ca3af;
+    }
+
+    /* Native scrollbar, for browsers that render one. */
+    .tableWrapper {
+      scrollbar-color: #4b5563 $dm-elevated;
+
+      &::-webkit-scrollbar-track {
+        background: $dm-elevated;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: #4b5563;
+        border-color: $dm-elevated;
+      }
+
+      &::-webkit-scrollbar-thumb:hover,
+      &::-webkit-scrollbar-thumb:active {
+        background: #6b7280;
+      }
+    }
+
     /* ----------------------------- Accordions ---------------------------- */
     .toggle-details,
     .toggle-container,

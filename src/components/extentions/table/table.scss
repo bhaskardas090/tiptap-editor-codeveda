@@ -8,6 +8,11 @@
   border: 1px solid #e5e7eb;
   font-size: 15px;
   position: relative;
+  /* Widths follow the colgroup the table node view maintains: a resized column
+     keeps its width, an untouched one keeps `cellMinWidth`. Once the columns
+     stop fitting, that node view sets a table min-width wider than the editor
+     and `.tableWrapper` scrolls — rather than every column being squeezed
+     narrower as more are added. */
   table-layout: auto;
 }
 
@@ -18,13 +23,13 @@
   text-align: left;
   vertical-align: middle;
   position: relative;
-  min-width: 100px;
   max-width: 320px;
   transition: background-color 0.2s ease;
   line-height: 1.5;
   word-break: break-word;
   overflow-wrap: break-word;
 }
+
 
 .tiptap-editor th p,
 .tiptap-editor td p {
@@ -50,7 +55,9 @@
   letter-spacing: 0.05em;
   padding: 10px 14px;
   text-align: left;
-  white-space: nowrap;
+  /* Wraps rather than spilling out of its column, since the column width is
+     fixed by the colgroup. */
+  white-space: normal;
 }
 
 .tiptap-editor td {
@@ -102,6 +109,74 @@
   border-radius: 0.5rem;
   border: 1px solid #e5e7eb;
   display: block;
+
+  /* A scrollbar wide enough to grab, for browsers that render a real one. */
+  scrollbar-color: #9ca3af #f3f4f6;
+
+  &::-webkit-scrollbar {
+    height: 12px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 9999px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #9ca3af;
+    border-radius: 9999px;
+    /* Inset the thumb without shrinking the area you can hit. */
+    border: 3px solid #f3f4f6;
+  }
+
+  &::-webkit-scrollbar-thumb:hover,
+  &::-webkit-scrollbar-thumb:active {
+    background: #6b7280;
+  }
+}
+
+/* ---------------------------- Custom scrollbar --------------------------- */
+
+/* Where the node view supplies its own bar, the native one is hidden: macOS
+   and mobile fade theirs out when idle, which is what made a wide table look
+   like it could not be scrolled. */
+.tiptap-editor .tableWrapper.has-custom-scrollbar {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.tiptap-editor .table-scrollbar {
+  display: none;
+  /* Pinned to the left edge of the viewport of the wrapper it scrolls. */
+  position: sticky;
+  left: 0;
+  height: 14px;
+  padding: 3px 4px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+}
+
+.tiptap-editor .tableWrapper.is-scrollable .table-scrollbar {
+  display: block;
+}
+
+.tiptap-editor .table-scrollbar-thumb {
+  height: 8px;
+  border-radius: 9999px;
+  background: #9ca3af;
+  transition: background-color 0.15s ease;
+  will-change: transform;
+}
+
+.tiptap-editor .table-scrollbar:hover .table-scrollbar-thumb,
+.tiptap-editor .tableWrapper.is-scrollbar-dragging .table-scrollbar-thumb {
+  background: #4b5563;
 }
 
 .tiptap-editor .tableWrapper table {
@@ -109,27 +184,13 @@
   border: none;
 }
 
-/* On narrow screens the available width is not enough to give every column a
-   usable size, so stop columns from collapsing: each one keeps a fixed floor
-   and the wrapper scrolls horizontally instead. */
+/* Narrow screens keep the same column widths — the wrapper scrolls — only the
+   cells get a little tighter so more of a column is text. */
 @media (max-width: 640px) {
-  .tiptap-editor table {
-    /* the cell floors below decide the real width; the table only has to be
-       at least as wide as the wrapper */
-    min-width: 100%;
-    table-layout: auto;
-  }
-
   .tiptap-editor th,
   .tiptap-editor td {
-    min-width: 150px;
     max-width: none;
     padding: 8px 10px;
-  }
-
-  /* Header text wraps instead of stretching a column across the viewport. */
-  .tiptap-editor th {
-    white-space: normal;
   }
 }
 

@@ -1,8 +1,9 @@
-import { Table, TableView } from "@tiptap/extension-table";
+import { Table } from "@tiptap/extension-table";
 import TableRow from "@tiptap/extension-table-row";
 import TableCell from "@tiptap/extension-table-cell";
 import TableHeader from "@tiptap/extension-table-header";
 import { selectAllWithin } from "../core-elements/selectAllWithin";
+import { ScrollableTableView } from "./ScrollableTableView";
 
 /**
  * Base table extension: keeps every shortcut the upstream extension ships and
@@ -17,8 +18,17 @@ const BaseTable = Table.extend({
   },
 });
 
+/**
+ * Minimum width of a column that has never been resized. It is what stops a
+ * table from squeezing every column narrower as columns are added: past this
+ * point the table grows wider than the editor and `.tableWrapper` scrolls.
+ */
+export const CELL_MIN_WIDTH = 180;
+
 export const TableExtension = BaseTable.configure({
   resizable: true,
+  cellMinWidth: CELL_MIN_WIDTH,
+  View: ScrollableTableView,
 });
 
 /**
@@ -34,8 +44,9 @@ export const TableExtension = BaseTable.configure({
  */
 export const ViewerTableExtension = BaseTable.extend({
   addNodeView() {
-    return ({ node }) => new TableView(node, this.options.cellMinWidth);
+    return ({ node }) =>
+      new ScrollableTableView(node, this.options.cellMinWidth);
   },
-}).configure({ resizable: false });
+}).configure({ resizable: false, cellMinWidth: CELL_MIN_WIDTH });
 
 export { TableRow, TableHeader, TableCell };
