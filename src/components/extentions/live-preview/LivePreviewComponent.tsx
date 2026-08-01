@@ -1,26 +1,28 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
 import { Button } from "../../ui/button";
-import { Settings, Trash2, Play, Code2, Eye } from "lucide-react";
+import {
+  Settings,
+  Trash2,
+  Play,
+  Code2,
+  Eye,
+  Maximize,
+  Minimize,
+} from "lucide-react";
 import { buildSrcDoc } from "./utils";
 import { useLivePreviewDarkMode } from "./dark-mode";
 
-type CodeTab = "html" | "css" | "js";
 type EditPanel = "code" | "preview";
 
 interface LivePreviewAttrs {
   html: string;
-  css: string;
-  js: string;
   height: string;
   title: string;
 }
 
-const CODE_TABS: { id: CodeTab; label: string }[] = [
-  { id: "html", label: "HTML" },
-  { id: "css", label: "CSS" },
-  { id: "js", label: "JS" },
-];
+/** Everything lives in one field: markup, `<style>` and `<script>` together. */
+const CODE_TAB_LABEL = "HTML CSS JS";
 
 const DEFAULT_TITLE = "Interactive view";
 // Default: size the preview to fit its content. An explicit value in the
@@ -77,17 +79,19 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
   editor,
 }) => {
   const [isEditing, setIsEditing] = useState(!!node.attrs.pendingEdit);
-  const [activeTab, setActiveTab] = useState<CodeTab>("html");
   const [editPanel, setEditPanel] = useState<EditPanel>("code");
   const [previewKey, setPreviewKey] = useState(0);
   const [measuredHeight, setMeasuredHeight] = useState<number | null>(null);
+  const [isNativeFullscreen, setIsNativeFullscreen] = useState(false);
+  // Used where the Fullscreen API is unavailable (iOS Safari on iPhone).
+  const [isOverlayFullscreen, setIsOverlayFullscreen] = useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const iframeRef = React.useRef<HTMLIFrameElement | null>(null);
 
+  const isFullscreen = isNativeFullscreen || isOverlayFullscreen;
+
   const [draft, setDraft] = useState<LivePreviewAttrs>({
     html: node.attrs.html || "",
-    css: node.attrs.css || "",
-    js: node.attrs.js || "",
     height: node.attrs.height || DEFAULT_HEIGHT,
     title: node.attrs.title || DEFAULT_TITLE,
   });
@@ -132,9 +136,17 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
     [node.attrs.html, node.attrs.css, node.attrs.js]
   );
 
+  // The draft only edits the markup; any legacy CSS/JS on the node is carried
+  // through untouched so the preview matches what will be saved.
   const draftSrcDoc = useMemo(
-    () => buildSrcDoc(draft.html, draft.css, draft.js, initialDarkRef.current),
-    [draft.html, draft.css, draft.js]
+    () =>
+      buildSrcDoc(
+        draft.html,
+        node.attrs.css,
+        node.attrs.js,
+        initialDarkRef.current
+      ),
+    [draft.html, node.attrs.css, node.attrs.js]
   );
 
   // Push dark-mode changes to the live iframe without rebuilding its srcDoc, so
@@ -150,12 +162,9 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
     if (!isEditable) return;
     setDraft({
       html: node.attrs.html || "",
-      css: node.attrs.css || "",
-      js: node.attrs.js || "",
       height: node.attrs.height || DEFAULT_HEIGHT,
       title: node.attrs.title || DEFAULT_TITLE,
     });
-    setActiveTab("html");
     setEditPanel("code");
     setIsEditing(true);
   };
@@ -170,8 +179,6 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
   const handleCancel = () => {
     setDraft({
       html: node.attrs.html || "",
-      css: node.attrs.css || "",
-      js: node.attrs.js || "",
       height: node.attrs.height || DEFAULT_HEIGHT,
       title: node.attrs.title || DEFAULT_TITLE,
     });
@@ -186,6 +193,87 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
   const updateDraftField = (field: keyof LivePreviewAttrs, value: string) => {
     setDraft((prev) => ({ ...prev, [field]: value }));
   };
+
+  /* --------------------------------- Fullscreen -------------------------- */
+
+  const enterFullscreen = async () => {
+    const el = containerRef.current as any;
+    if (!el) return;
+
+    const request =
+      el.requestFullscreen ||
+      el.webkitRequestFullscreen ||
+      el.mozRequestFullScreen ||
+      el.msRequestFullscreen;
+
+    if (request) {
+      try {
+        await request.call(el);
+        return;
+      } catch {
+        /* rejected — fall back to the overlay below */
+      }
+    }
+
+    // iPhone Safari has no element fullscreen: cover the viewport instead.
+    setIsOverlayFullscreen(true);
+  };
+
+  const exitFullscreen = () => {
+    if (isOverlayFullscreen) {
+      setIsOverlayFullscreen(false);
+      return;
+    }
+
+    const doc = document as any;
+    const exit =
+      doc.exitFullscreen ||
+      doc.webkitExitFullscreen ||
+      doc.mozCancelFullScreen ||
+      doc.msExitFullscreen;
+    exit?.call(document);
+  };
+
+  const toggleFullscreen = () => {
+    if (isFullscreen) {
+      exitFullscreen();
+    } else {
+      void enterFullscreen();
+    }
+  };
+
+  // Track fullscreen state, including exits we didn't trigger (Esc, back gesture)
+  useEffect(() => {
+    const handleChange = () => {
+      const doc = document as any;
+      const element =
+        doc.fullscreenElement ||
+        doc.webkitFullscreenElement ||
+        doc.mozFullScreenElement ||
+        doc.msFullscreenElement;
+      setIsNativeFullscreen(!!element && element === containerRef.current);
+    };
+
+    const events = [
+      "fullscreenchange",
+      "webkitfullscreenchange",
+      "mozfullscreenchange",
+      "MSFullscreenChange",
+    ];
+    events.forEach((e) => document.addEventListener(e, handleChange));
+    return () =>
+      events.forEach((e) => document.removeEventListener(e, handleChange));
+  }, []);
+
+  // Esc closes the overlay fallback, matching native fullscreen behaviour.
+  useEffect(() => {
+    if (!isOverlayFullscreen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOverlayFullscreen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [isOverlayFullscreen]);
 
   // Listen for the height the active iframe reports about its own content so
   // we can size the preview to fit when no explicit height is set.
@@ -207,7 +295,12 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
     return () => window.removeEventListener("message", onMessage);
   }, []);
 
-  const renderPreviewIframe = (srcDoc: string, height: string, key: number) => {
+  const renderPreviewIframe = (
+    srcDoc: string,
+    height: string,
+    key: number,
+    fillViewport = false
+  ) => {
     const auto = isAutoHeight(height);
 
     // Resolve the iframe height. A configured pixel height is treated as a
@@ -238,6 +331,12 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
       // Height not measured yet — fall back to the authored value.
       resolvedHeight = auto ? "auto" : normalizeHeight(height);
       scroll = !auto;
+    }
+
+    // Fullscreen ignores the authored height: the preview owns the screen.
+    if (fillViewport) {
+      resolvedHeight = "100%";
+      scroll = true;
     }
 
     return (
@@ -309,24 +408,15 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
           {editPanel === "code" ? (
             <>
               <div className="live-preview-tabs">
-                {CODE_TABS.map((tab) => (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    className={`live-preview-tab ${activeTab === tab.id ? "active" : ""}`}
-                    onClick={() => setActiveTab(tab.id)}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
+                <span className="live-preview-tab active">{CODE_TAB_LABEL}</span>
               </div>
 
               <textarea
                 className="live-preview-code-input"
-                value={draft[activeTab]}
-                onChange={(e) => updateDraftField(activeTab, e.target.value)}
+                value={draft.html}
+                onChange={(e) => updateDraftField("html", e.target.value)}
                 spellCheck={false}
-                aria-label={`${activeTab.toUpperCase()} code`}
+                aria-label={`${CODE_TAB_LABEL} code`}
               />
 
               <div className="live-preview-meta-row">
@@ -381,35 +471,62 @@ const LivePreviewComponent: React.FC<NodeViewProps> = ({
 
   return (
     <NodeViewWrapper className="live-preview-extension">
-      <div ref={containerRef} className="live-preview-output group relative">
-        {renderPreviewIframe(savedSrcDoc, node.attrs.height, previewKey)}
-
-        {isEditable && (
-          <div className="live-preview-controls">
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              className="h-8 w-8 p-0"
-              title="Edit code"
-              onClick={openEditor}
-            >
-              <Settings className="h-4 w-4" />
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-              title="Delete"
-              onClick={() => deleteNode()}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
+      <div
+        ref={containerRef}
+        className={`live-preview-output group relative${
+          isOverlayFullscreen ? " live-preview-fullscreen-overlay" : ""
+        }${isFullscreen ? " is-fullscreen" : ""}`}
+      >
+        {renderPreviewIframe(
+          savedSrcDoc,
+          node.attrs.height,
+          previewKey,
+          isFullscreen
         )}
 
-        {node.attrs.title && (
+        <div className="live-preview-controls">
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            className="h-8 w-8 p-0"
+            title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+            onClick={toggleFullscreen}
+          >
+            {isFullscreen ? (
+              <Minimize className="h-4 w-4" />
+            ) : (
+              <Maximize className="h-4 w-4" />
+            )}
+          </Button>
+
+          {isEditable && !isFullscreen && (
+            <>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                className="h-8 w-8 p-0"
+                title="Edit code"
+                onClick={openEditor}
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                title="Delete"
+                onClick={() => deleteNode()}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </>
+          )}
+        </div>
+
+        {node.attrs.title && !isFullscreen && (
           <div className="live-preview-label">{node.attrs.title}</div>
         )}
       </div>

@@ -35,12 +35,21 @@
 }
 
 .live-preview-output:hover .live-preview-controls,
+.live-preview-output:focus-within .live-preview-controls,
 .live-preview-controls-readonly {
   opacity: 1;
 }
 
 .live-preview-controls-readonly {
   opacity: 0.7;
+}
+
+/* Touch devices never hover, so the controls (fullscreen in particular) would
+   otherwise be unreachable. */
+@media (hover: none) {
+  .live-preview-controls {
+    opacity: 1;
+  }
 }
 
 .live-preview-label {
@@ -145,6 +154,8 @@
   flex-wrap: wrap;
 }
 
+/* ------------------------------- Fullscreen ------------------------------ */
+
 .live-preview-extension:fullscreen {
   background: #000;
   display: flex;
@@ -161,4 +172,30 @@
   height: 100%;
   border: none;
   border-radius: 0;
+}
+
+/* The preview itself is what goes fullscreen (native API), or is pinned over
+   the viewport where that API is missing (iPhone Safari). */
+.live-preview-output:fullscreen,
+.live-preview-output:-webkit-full-screen,
+.live-preview-output.live-preview-fullscreen-overlay {
+  width: 100vw;
+  height: 100vh;
+  border: none;
+  border-radius: 0;
+  background: #fff;
+}
+
+.live-preview-output.live-preview-fullscreen-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  margin: 0;
+}
+
+/* Keep the exit button reachable while fullscreen, hover or not. */
+.live-preview-output.is-fullscreen .live-preview-controls {
+  opacity: 1;
+  top: 12px;
+  right: 12px;
 }

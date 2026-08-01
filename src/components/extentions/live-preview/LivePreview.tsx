@@ -1,11 +1,13 @@
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import LivePreviewComponent from "./LivePreviewComponent";
-import { DEFAULT_CSS, DEFAULT_HTML, DEFAULT_JS } from "./utils";
+import { DEFAULT_HTML } from "./utils";
 
 export interface LivePreviewAttributes {
   html: string;
+  /** @deprecated Only kept so documents saved with separate CSS/JS still render. */
   css: string;
+  /** @deprecated Only kept so documents saved with separate CSS/JS still render. */
   js: string;
   height: string;
   title: string;
@@ -36,15 +38,15 @@ export const LivePreview = Node.create({
     return {
       html: {
         default: DEFAULT_HTML,
-        parseHTML: (element) => readPart(element, "html") || DEFAULT_HTML,
+        parseHTML: (element) => readPart(element, "html"),
       },
       css: {
-        default: DEFAULT_CSS,
-        parseHTML: (element) => readPart(element, "css") || DEFAULT_CSS,
+        default: "",
+        parseHTML: (element) => readPart(element, "css"),
       },
       js: {
-        default: DEFAULT_JS,
-        parseHTML: (element) => readPart(element, "js") || DEFAULT_JS,
+        default: "",
+        parseHTML: (element) => readPart(element, "js"),
       },
       height: {
         default: "auto",
@@ -74,6 +76,18 @@ export const LivePreview = Node.create({
   },
 
   renderHTML({ node, HTMLAttributes }) {
+    const parts: any[] = [
+      ["pre", { "data-part": "html", hidden: "hidden" }, node.attrs.html || ""],
+    ];
+
+    // Only written back for documents that still carry the legacy fields.
+    if (node.attrs.css) {
+      parts.push(["pre", { "data-part": "css", hidden: "hidden" }, node.attrs.css]);
+    }
+    if (node.attrs.js) {
+      parts.push(["pre", { "data-part": "js", hidden: "hidden" }, node.attrs.js]);
+    }
+
     return [
       "div",
       mergeAttributes(HTMLAttributes, {
@@ -81,9 +95,7 @@ export const LivePreview = Node.create({
         "data-height": node.attrs.height,
         "data-title": node.attrs.title,
       }),
-      ["pre", { "data-part": "html", hidden: "hidden" }, node.attrs.html],
-      ["pre", { "data-part": "css", hidden: "hidden" }, node.attrs.css],
-      ["pre", { "data-part": "js", hidden: "hidden" }, node.attrs.js],
+      ...parts,
     ];
   },
 
@@ -100,8 +112,8 @@ export const LivePreview = Node.create({
             type: this.name,
             attrs: {
               html: options.html ?? DEFAULT_HTML,
-              css: options.css ?? DEFAULT_CSS,
-              js: options.js ?? DEFAULT_JS,
+              css: options.css ?? "",
+              js: options.js ?? "",
               height: options.height ?? "auto",
               title: options.title ?? "Interactive view",
               pendingEdit: options.pendingEdit ?? false,
