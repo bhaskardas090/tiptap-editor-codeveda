@@ -40,6 +40,7 @@ import {
   Column,
 } from "./components/extentions";
 import { isYouTubeUrl } from "./components/extentions/video/videoUtils";
+import { trackInsertPosition } from "./components/extentions/core-elements/trackInsertPosition";
 
 interface TiptapProps {
   onImageUpload?: (file: File) => Promise<string>; // Function to upload image and return URL
@@ -174,6 +175,9 @@ const Tiptap: React.FC<TiptapProps> = ({
         if (imageItems.length > 0 && onImageUpload && editorRef.current) {
           event.preventDefault();
 
+          // Paste position, followed through any edits made while uploading.
+          const target = trackInsertPosition(editorRef.current);
+
           // Process each image
           const uploadPromises = imageItems.map((item) => {
             const file = item.getAsFile();
@@ -182,11 +186,14 @@ const Tiptap: React.FC<TiptapProps> = ({
             return onImageUpload(file)
               .then((imageUrl) => {
                 if (imageUrl && editorRef.current) {
-                  // Insert the uploaded image
+                  // Insert the uploaded image where it was pasted
                   editorRef.current
                     .chain()
-                    .focus()
-                    .setImage({ src: imageUrl })
+                    .insertContentAt(
+                      target.get(),
+                      { type: "image", attrs: { src: imageUrl } },
+                      { updateSelection: false }
+                    )
                     .run();
                 }
                 return imageUrl;
@@ -202,6 +209,7 @@ const Tiptap: React.FC<TiptapProps> = ({
           setIsImageUploading(true);
 
           Promise.all(uploadPromises).finally(() => {
+            target.release();
             setIsImageUploading(false);
           });
 
@@ -230,6 +238,9 @@ const Tiptap: React.FC<TiptapProps> = ({
             if (imagesToUpload.length > 0) {
               event.preventDefault();
 
+              // Paste position, followed through any edits made while uploading.
+              const target = trackInsertPosition(editorRef.current);
+
               const imagePromises = imagesToUpload.map((img) => {
                 const src = img.getAttribute("src");
                 if (!src) return Promise.resolve(null);
@@ -244,8 +255,11 @@ const Tiptap: React.FC<TiptapProps> = ({
                       if (imageUrl && editorRef.current) {
                         editorRef.current
                           .chain()
-                          .focus()
-                          .setImage({ src: imageUrl })
+                          .insertContentAt(
+                            target.get(),
+                            { type: "image", attrs: { src: imageUrl } },
+                            { updateSelection: false }
+                          )
                           .run();
                       }
                       return imageUrl;
@@ -277,6 +291,7 @@ const Tiptap: React.FC<TiptapProps> = ({
 
               setIsImageUploading(true);
               Promise.all(imagePromises).finally(() => {
+                target.release();
                 setIsImageUploading(false);
               });
               return true;
@@ -457,17 +472,28 @@ const Tiptap: React.FC<TiptapProps> = ({
     input.accept = "image/*";
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
-      if (file && onImageUpload) {
+      if (file && onImageUpload && editor) {
+        // Where the cursor is *now* — the image lands here even if the author
+        // keeps writing somewhere else while it uploads.
+        const target = trackInsertPosition(editor);
         try {
           setIsImageUploading(true);
           const imageUrl = await onImageUpload(file);
           if (imageUrl) {
-            editor?.chain().focus().setImage({ src: imageUrl }).run();
+            editor
+              .chain()
+              .insertContentAt(
+                target.get(),
+                { type: "image", attrs: { src: imageUrl } },
+                { updateSelection: false }
+              )
+              .run();
           }
         } catch (error) {
           console.error("Failed to upload image:", error);
           alert("Failed to upload image. Please try again.");
         } finally {
+          target.release();
           setIsImageUploading(false);
         }
       }
@@ -510,29 +536,29 @@ const Tiptap: React.FC<TiptapProps> = ({
       if (file) {
         setShowVideoInput(false);
       }
-      if (file && onVideoUpload) {
+      if (file && onVideoUpload && editor) {
+        // Remember where the upload was started; the cursor may move on.
+        const target = trackInsertPosition(editor);
         try {
           setIsVideoUploading(true);
           const videoUrl = await onVideoUpload(file);
           if (videoUrl) {
-            console.log("Attempting to insert video:", {
-              src: videoUrl,
-              type: file.type,
-              title: file.name,
-            });
-
             try {
-              const result = editor
-                ?.chain()
-                .focus()
-                .setVideo({
-                  src: videoUrl,
-                  type: file.type,
-                  title: file.name,
-                })
+              editor
+                .chain()
+                .insertContentAt(
+                  target.get(),
+                  {
+                    type: "video",
+                    attrs: {
+                      src: videoUrl,
+                      type: file.type,
+                      title: file.name,
+                    },
+                  },
+                  { updateSelection: false }
+                )
                 .run();
-
-              console.log("Video insertion result:", result);
             } catch (insertError) {
               console.error("Error inserting video into editor:", insertError);
               throw insertError;
@@ -552,34 +578,32 @@ const Tiptap: React.FC<TiptapProps> = ({
         } finally {
           setIsVideoUploading(false);
         }
-      } else if (file && !onVideoUpload) {
+      } else if (file && !onVideoUpload && editor) {
         // Fallback to base64 if no upload function provided
+        const target = trackInsertPosition(editor);
         const reader = new FileReader();
         reader.onload = (e) => {
           const src = e.target?.result as string;
-          console.log("Attempting to insert base64 video:", {
-            src: src.substring(0, 100) + "...",
-            type: file.type,
-            title: file.name,
-          });
 
           try {
-            const result = editor
-              ?.chain()
-              .focus()
-              .setVideo({
-                src: src,
-                type: file.type,
-                title: file.name,
-              })
+            editor
+              .chain()
+              .insertContentAt(
+                target.get(),
+                {
+                  type: "video",
+                  attrs: { src, type: file.type, title: file.name },
+                },
+                { updateSelection: false }
+              )
               .run();
-
-            console.log("Base64 video insertion result:", result);
           } catch (insertError) {
             console.error(
               "Error inserting base64 video into editor:",
               insertError,
             );
+          } finally {
+            target.release();
           }
         };
         reader.readAsDataURL(file);
@@ -644,34 +668,8 @@ const Tiptap: React.FC<TiptapProps> = ({
           <EditorContent editor={editor} className="tiptap-editor" />
         </LivePreviewDarkModeProvider>
 
-        {/* Image Upload Loader Overlay */}
-        {isImageUploading && (
-          <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50 rounded-lg">
-            <div className="flex flex-col items-center gap-3">
-              <div className="relative">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-blue-600"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <svg
-                    className="w-6 h-6 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                </div>
-              </div>
-              <p className="text-sm font-medium text-gray-700">
-                Uploading image...
-              </p>
-            </div>
-          </div>
-        )}
+        {/* Uploads show their progress on the toolbar button, like videos do —
+            the editor stays usable while a file is on its way. */}
 
         {/* Floating Menu */}
         <FloatingMenu

@@ -56,6 +56,14 @@ button.addEventListener('click', () =&gt; {
       <TiptapEditor
         setEditorContent={setEditorContent}
         content="<p>Hello World</p>"
+        // onImageUpload={async () => {
+        //   await new Promise((r) => setTimeout(r, 2500));
+        //   return "https://i.ytimg.com/vi/YGhxfRD_j4Y/sddefault.jpg";
+        // }}
+        // onVideoUpload={async () => {
+        //   await new Promise((r) => setTimeout(r, 2500));
+        //   return "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+        // }}
       />
       <TiptapViewer editorContent={content.html} />
     </>
