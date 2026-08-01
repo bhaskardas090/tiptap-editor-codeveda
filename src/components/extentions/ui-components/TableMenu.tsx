@@ -28,7 +28,7 @@ const TableMenu: React.FC<TableMenuProps> = ({
         background: "rgba(255, 255, 255, 0.95)",
       }}
     >
-      <div className="flex gap-1 items-center">
+      <div className="table-bubble-menu-row flex gap-1 items-center">
         <MenuButton
           onClick={() => editor.chain().focus().addRowBefore().run()}
           title="Add Row Before"
@@ -57,7 +57,6 @@ const TableMenu: React.FC<TableMenuProps> = ({
           className="h-8 w-auto px-2"
         >
           <div className="flex items-center gap-1">
-            ß
             <Plus className="h-3 w-3" />
             <span className="text-xs">← Col</span>
           </div>

@@ -3,6 +3,7 @@ import { ReactNodeViewRenderer } from "@tiptap/react";
 import TabsComponent from "./TabsComponent";
 import TabItemComponent from "./TabItemComponent";
 import { MAX_TABS, MIN_TABS } from "./constants";
+import { selectAllWithin } from "../core-elements/selectAllWithin";
 
 export const Tabs = Node.create({
   name: "tabs",
@@ -171,39 +172,7 @@ export const TabItem = Node.create({
     return {
       // Keep "select all" inside the tab the cursor is in, instead of
       // selecting the whole document.
-      "Mod-a": ({ editor }: any) => {
-        const { state } = editor;
-        const { $from } = state.selection;
-
-        // Innermost enclosing tab item (tabs can be nested inside a tab)
-        let depth = -1;
-        for (let d = $from.depth; d > 0; d--) {
-          if ($from.node(d).type.name === "tabItem") {
-            depth = d;
-            break;
-          }
-        }
-        if (depth === -1) return false;
-
-        // First/last text positions inside the tab item. Using the tab item's
-        // own boundaries would land the selection on block positions, which
-        // cannot hold a text selection.
-        let from = -1;
-        let to = -1;
-        state.doc.nodesBetween(
-          $from.start(depth),
-          $from.end(depth),
-          (child: any, pos: number) => {
-            if (child.isTextblock) {
-              if (from === -1) from = pos + 1;
-              to = pos + child.nodeSize - 1;
-            }
-          }
-        );
-        if (from === -1) return false;
-
-        return editor.commands.setTextSelection({ from, to });
-      },
+      "Mod-a": ({ editor }: any) => selectAllWithin(editor),
 
       // The isolating property should handle most splitting prevention
       // These shortcuts provide additional protection

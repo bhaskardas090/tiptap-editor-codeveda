@@ -109,6 +109,30 @@
   border: none;
 }
 
+/* On narrow screens the available width is not enough to give every column a
+   usable size, so stop columns from collapsing: each one keeps a fixed floor
+   and the wrapper scrolls horizontally instead. */
+@media (max-width: 640px) {
+  .tiptap-editor table {
+    /* the cell floors below decide the real width; the table only has to be
+       at least as wide as the wrapper */
+    min-width: 100%;
+    table-layout: auto;
+  }
+
+  .tiptap-editor th,
+  .tiptap-editor td {
+    min-width: 150px;
+    max-width: none;
+    padding: 8px 10px;
+  }
+
+  /* Header text wraps instead of stretching a column across the viewport. */
+  .tiptap-editor th {
+    white-space: normal;
+  }
+}
+
 .tiptap-editor .tableWrapper th:first-child,
 .tiptap-editor .tableWrapper td:first-child {
   border-left: none;

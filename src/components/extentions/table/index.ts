@@ -2,8 +2,22 @@ import { Table, TableView } from "@tiptap/extension-table";
 import TableRow from "@tiptap/extension-table-row";
 import TableCell from "@tiptap/extension-table-cell";
 import TableHeader from "@tiptap/extension-table-header";
+import { selectAllWithin } from "../core-elements/selectAllWithin";
 
-export const TableExtension = Table.configure({
+/**
+ * Base table extension: keeps every shortcut the upstream extension ships and
+ * scopes "select all" to the cell the cursor is in.
+ */
+const BaseTable = Table.extend({
+  addKeyboardShortcuts() {
+    return {
+      ...this.parent?.(),
+      "Mod-a": ({ editor }: any) => selectAllWithin(editor),
+    };
+  },
+});
+
+export const TableExtension = BaseTable.configure({
   resizable: true,
 });
 
@@ -18,7 +32,7 @@ export const TableExtension = Table.configure({
  * therefore skips the plugin entirely, leaving tables unwrapped and breaking
  * the horizontal-scroll CSS.
  */
-export const ViewerTableExtension = Table.extend({
+export const ViewerTableExtension = BaseTable.extend({
   addNodeView() {
     return ({ node }) => new TableView(node, this.options.cellMinWidth);
   },

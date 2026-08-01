@@ -93,6 +93,20 @@ button[data-state="on"] {
     0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
 }
 
+/* On phones the row of table controls is wider than the screen, which used to
+   push the whole page sideways. Keep it inside the editor and let it wrap. */
+@media (max-width: 640px) {
+  .table-bubble-menu {
+    max-width: calc(100% - 1rem);
+  }
+
+  .table-bubble-menu-row {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 0.25rem;
+  }
+}
+
 /* Arrow utilities for table menu */
 .border-l-6 {
   border-left-width: 6px;
