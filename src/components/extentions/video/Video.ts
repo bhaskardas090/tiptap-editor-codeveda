@@ -1,7 +1,11 @@
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import VideoComponent from "./VideoComponent";
-import { getYouTubeEmbedUrl } from "./videoUtils";
+import {
+  getYouTubeEmbedUrl,
+  normalizeVideoMimeType,
+  normalizeVideoSrc,
+} from "./videoUtils";
 
 const YOUTUBE_IFRAME_ALLOW =
   "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
@@ -147,14 +151,23 @@ export const Video = Node.create<VideoOptions>({
       ];
     }
 
+    const playableSrc = normalizeVideoSrc(src);
+    const sourceType = normalizeVideoMimeType(type);
+
     return [
       "video",
       mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {
+        src: playableSrc,
         controls: true,
         preload: "metadata",
       }),
-      ["source", { src, type: type || "video/mp4" }],
-      title ? title : "Your browser does not support the video tag.",
+      [
+        "source",
+        sourceType
+          ? { src: playableSrc, type: sourceType }
+          : { src: playableSrc },
+      ],
+      "Your browser does not support the video tag.",
     ];
   },
 

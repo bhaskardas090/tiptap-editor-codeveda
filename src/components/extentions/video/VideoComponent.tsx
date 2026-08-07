@@ -1,13 +1,13 @@
 import React from "react";
 import { NodeViewWrapper } from "@tiptap/react";
-import { getYouTubeEmbedUrl } from "./videoUtils";
+import { getYouTubeEmbedUrl, normalizeVideoSrc } from "./videoUtils";
 
 interface VideoComponentProps {
   node: any;
 }
 
 const VideoComponent: React.FC<VideoComponentProps> = ({ node }) => {
-  const { src, type, title } = node.attrs;
+  const { src, title } = node.attrs;
 
   if (!src) {
     return (
@@ -39,28 +39,26 @@ const VideoComponent: React.FC<VideoComponentProps> = ({ node }) => {
               loading="lazy"
             />
           </div>
-          {title && (
-            <div className="video-caption">
-              <span className="video-caption-text">{title}</span>
-            </div>
-          )}
         </div>
       </NodeViewWrapper>
     );
   }
 
+  // `src` goes on the element rather than a <source> child: a child would be
+  // filtered by its `type` before the browser ever fetches it, and its absence
+  // would also trip the `video:not([src])` placeholder styling.
   return (
     <NodeViewWrapper className="video-node-view">
       <div className="video-container" contentEditable={false}>
-        <video controls className="video-element" preload="metadata" poster="">
-          <source src={src} type={type || "video/mp4"} />
-          {title || "Your browser does not support the video tag."}
+        <video
+          controls
+          className="video-element"
+          preload="metadata"
+          src={normalizeVideoSrc(src)}
+          title={title || undefined}
+        >
+          Your browser does not support the video tag.
         </video>
-        {title && (
-          <div className="video-caption">
-            <span className="video-caption-text">{title}</span>
-          </div>
-        )}
       </div>
     </NodeViewWrapper>
   );
