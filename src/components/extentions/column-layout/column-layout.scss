@@ -27,6 +27,11 @@
   border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
   min-height: 16px;
+  /* Grid items default to min-width: auto, so wide content (a code block with
+     long lines, a table) forces the track past its 1fr share and pushes the
+     layout past the editor width. 0 lets the track stay at 1fr and the
+     child's own overflow-x handle the scrolling. */
+  min-width: 0;
 }
 
 /* Responsive Design */
