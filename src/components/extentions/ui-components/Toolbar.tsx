@@ -38,6 +38,9 @@ interface ToolbarProps {
   setImageUrl: (url: string) => void;
   handleImageUrlInsert: () => void;
   imageUploadFunction?: (file: File) => Promise<string>;
+  /** Whether images inserted from here get a download button. */
+  imageDownloadable: boolean;
+  setImageDownloadable: (downloadable: boolean) => void;
   showVideoInput: boolean;
   setShowVideoInput: (show: boolean) => void;
   videoUrl: string;
@@ -59,6 +62,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
   setImageUrl,
   handleImageUrlInsert,
   imageUploadFunction,
+  imageDownloadable,
+  setImageDownloadable,
   showVideoInput,
   setShowVideoInput,
   videoUrl,
@@ -298,6 +303,38 @@ const Toolbar: React.FC<ToolbarProps> = ({
                       Upload function not provided
                     </p>
                   )}
+                </div>
+
+                {/* Applies to whichever route inserts the image below. */}
+                <div className="border-t pt-3 flex items-center justify-between gap-3">
+                  <div>
+                    <label
+                      htmlFor="image-downloadable-toggle"
+                      className="block text-sm font-medium text-gray-700 cursor-pointer"
+                    >
+                      Download button
+                    </label>
+                    <p className="text-xs text-gray-500">
+                      Show a download button on the image
+                    </p>
+                  </div>
+                  <button
+                    id="image-downloadable-toggle"
+                    type="button"
+                    role="switch"
+                    aria-checked={imageDownloadable}
+                    onClick={() => setImageDownloadable(!imageDownloadable)}
+                    disabled={isImageUploading}
+                    className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                      imageDownloadable ? "bg-blue-600" : "bg-gray-300"
+                    } ${isImageUploading ? "opacity-50 cursor-not-allowed" : ""}`}
+                  >
+                    <span
+                      className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                        imageDownloadable ? "translate-x-4" : "translate-x-0"
+                      }`}
+                    />
+                  </button>
                 </div>
               </div>
             </div>

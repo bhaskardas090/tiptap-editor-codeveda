@@ -48,8 +48,14 @@ const BubbleMenu: React.FC<BubbleMenuProps> = ({ editor, isReadOnly }) => {
       shouldShow={({ editor, state }) => {
         const { from, to } = state.selection;
         const hasSelection = from !== to;
-        // Only show when text is selected and we're not inside a code block
-        return hasSelection && !editor.isActive("codeBlock");
+        // Only show when text is selected and we're not inside a code block.
+        // A selected image also reads as a selection, but none of these marks
+        // apply to it and the menu would sit on top of ImageMenu.
+        return (
+          hasSelection &&
+          !editor.isActive("codeBlock") &&
+          !editor.isActive("image")
+        );
       }}
       className="bubble-menu bg-white border border-gray-300 rounded-lg p-2 shadow-lg z-50"
     >

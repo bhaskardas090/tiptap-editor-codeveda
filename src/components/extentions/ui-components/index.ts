@@ -4,6 +4,7 @@ export { default as ColorPickerBg } from "./ColorPickerBg";
 export { default as Toolbar } from "./Toolbar";
 export { default as BubbleMenu } from "./BubbleMenu";
 export { default as CodeBlockMenu } from "./CodeBlockMenu";
+export { default as ImageMenu } from "./ImageMenu";
 export { default as FloatingMenu } from "./FloatingMenu";
 export { default as TableMenu } from "./TableMenu";
 export { default as DebugInfo } from "./DebugInfo";

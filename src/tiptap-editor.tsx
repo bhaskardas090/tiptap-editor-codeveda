@@ -31,6 +31,7 @@ import {
   Toolbar,
   BubbleMenu,
   CodeBlockMenu,
+  ImageMenu,
   FloatingMenu,
   TableMenu,
   DebugInfo,
@@ -74,6 +75,14 @@ const Tiptap: React.FC<TiptapProps> = ({
   }, [resolvedDarkMode]);
   const [imageUrl, setImageUrl] = useState("");
   const [showImageInput, setShowImageInput] = useState(false);
+  // Whether newly inserted images carry a download button. The paste handlers
+  // live inside the `useEditor` config, which is built once, so they read the
+  // ref rather than closing over a stale state value.
+  const [imageDownloadable, setImageDownloadable] = useState(false);
+  const imageDownloadableRef = useRef(false);
+  useEffect(() => {
+    imageDownloadableRef.current = imageDownloadable;
+  }, [imageDownloadable]);
   const [videoUrl, setVideoUrl] = useState("");
   const [showVideoInput, setShowVideoInput] = useState(false);
   const [, forceUpdate] = useState({});
@@ -191,7 +200,13 @@ const Tiptap: React.FC<TiptapProps> = ({
                     .chain()
                     .insertContentAt(
                       target.get(),
-                      { type: "image", attrs: { src: imageUrl } },
+                      {
+                        type: "image",
+                        attrs: {
+                          src: imageUrl,
+                          downloadable: imageDownloadableRef.current,
+                        },
+                      },
                       { updateSelection: false }
                     )
                     .run();
@@ -257,7 +272,13 @@ const Tiptap: React.FC<TiptapProps> = ({
                           .chain()
                           .insertContentAt(
                             target.get(),
-                            { type: "image", attrs: { src: imageUrl } },
+                            {
+                              type: "image",
+                              attrs: {
+                                src: imageUrl,
+                                downloadable: imageDownloadableRef.current,
+                              },
+                            },
                             { updateSelection: false }
                           )
                           .run();
@@ -484,7 +505,13 @@ const Tiptap: React.FC<TiptapProps> = ({
               .chain()
               .insertContentAt(
                 target.get(),
-                { type: "image", attrs: { src: imageUrl } },
+                {
+                  type: "image",
+                  attrs: {
+                    src: imageUrl,
+                    downloadable: imageDownloadableRef.current,
+                  },
+                },
                 { updateSelection: false }
               )
               .run();
@@ -503,11 +530,20 @@ const Tiptap: React.FC<TiptapProps> = ({
 
   const handleImageUrlInsert = useCallback(() => {
     if (imageUrl.trim()) {
-      editor?.chain().focus().setImage({ src: imageUrl.trim() }).run();
+      // insertContent rather than setImage: the latter's signature only carries
+      // src/alt/title, so it cannot pass the `downloadable` attribute through.
+      editor
+        ?.chain()
+        .focus()
+        .insertContent({
+          type: "image",
+          attrs: { src: imageUrl.trim(), downloadable: imageDownloadable },
+        })
+        .run();
       setImageUrl("");
       setShowImageInput(false);
     }
-  }, [editor, imageUrl]);
+  }, [editor, imageUrl, imageDownloadable]);
 
   const handleVideoUrlInsert = useCallback(() => {
     const url = videoUrl.trim();
@@ -654,6 +690,8 @@ const Tiptap: React.FC<TiptapProps> = ({
         setImageUrl={setImageUrl}
         handleImageUrlInsert={handleImageUrlInsert}
         imageUploadFunction={onImageUpload}
+        imageDownloadable={imageDownloadable}
+        setImageDownloadable={setImageDownloadable}
         showVideoInput={showVideoInput}
         setShowVideoInput={setShowVideoInput}
         videoUrl={videoUrl}
@@ -683,6 +721,9 @@ const Tiptap: React.FC<TiptapProps> = ({
 
         {/* Code Block Menu */}
         <CodeBlockMenu editor={editor} isReadOnly={isReadOnly} />
+
+        {/* Image Menu */}
+        <ImageMenu editor={editor} isReadOnly={isReadOnly} />
 
         {/* Table Menu */}
         <TableMenu
