@@ -42,6 +42,8 @@ import {
 } from "./components/extentions";
 import { isYouTubeUrl } from "./components/extentions/video/videoUtils";
 import { trackInsertPosition } from "./components/extentions/core-elements/trackInsertPosition";
+import { useDeferredMediaCleanup } from "./components/extentions/core-elements/useDeferredMediaCleanup";
+import { useDebouncedCallback } from "./components/extentions/core-elements/useDebouncedCallback";
 
 interface TiptapProps {
   onImageUpload?: (file: File) => Promise<string>; // Function to upload image and return URL
@@ -50,6 +52,18 @@ interface TiptapProps {
   onVideoDelete?: (url: string) => Promise<void>; // Function to delete video by URL
   content?: string;
   setEditorContent?: (content: { html: string; json: any }) => void;
+  /**
+   * Milliseconds to coalesce `setEditorContent` calls over, so a burst of
+   * typing reports once instead of per keystroke. Pass 0 to report every
+   * change immediately.
+   */
+  contentUpdateDelay?: number;
+  /**
+   * Milliseconds to hold a removed image or video before calling
+   * `onImageDelete` / `onVideoDelete`. Undo within this window cancels the
+   * deletion. Pass 0 to delete as soon as the node is removed.
+   */
+  mediaDeleteDelay?: number;
   /** Force Live Preview dark mode. When omitted, the `darkMode` cookie is used. */
   darkMode?: boolean;
   /** Cookie consulted for dark mode when `darkMode` is not provided. */
@@ -63,6 +77,8 @@ const Tiptap: React.FC<TiptapProps> = ({
   onVideoDelete,
   content,
   setEditorContent,
+  contentUpdateDelay = 300,
+  mediaDeleteDelay = 5000,
   darkMode,
   darkModeCookieName,
 }) => {
@@ -97,35 +113,19 @@ const Tiptap: React.FC<TiptapProps> = ({
     show: boolean;
   }>({ top: 0, left: 0, show: false });
 
-  // Helper function to extract image URLs from editor content
-  const extractImageUrls = (json: any): Set<string> => {
-    const urls = new Set<string>();
-    const traverse = (node: any) => {
-      if (node.type === "image" && node.attrs?.src) {
-        urls.add(node.attrs.src);
-      }
-      if (node.content && Array.isArray(node.content)) {
-        node.content.forEach(traverse);
-      }
-    };
-    traverse(json);
-    return urls;
-  };
+  // Removed images and videos are deleted after a grace period, so an undo can
+  // take the file back before it is gone. See useDeferredMediaCleanup.
+  const { reconcile: reconcileMedia } = useDeferredMediaCleanup({
+    onImageDelete,
+    onVideoDelete,
+    delay: mediaDeleteDelay,
+  });
 
-  // Helper function to extract video URLs from editor content
-  const extractVideoUrls = (json: any): Set<string> => {
-    const urls = new Set<string>();
-    const traverse = (node: any) => {
-      if (node.type === "video" && node.attrs?.src) {
-        urls.add(node.attrs.src);
-      }
-      if (node.content && Array.isArray(node.content)) {
-        node.content.forEach(traverse);
-      }
-    };
-    traverse(json);
-    return urls;
-  };
+  // Coalesce content reports: a burst of typing is one call, not one per key.
+  const reportContent = useDebouncedCallback(
+    (payload: { html: string; json: any }) => setEditorContent?.(payload),
+    contentUpdateDelay
+  );
 
   const editor = useEditor({
     extensions: [
@@ -327,49 +327,21 @@ const Tiptap: React.FC<TiptapProps> = ({
     onUpdate: () => {
       const currentJson = editor.getJSON();
 
-      // Detect deleted images and videos by comparing with previous content
-      if (previousContent) {
-        const previousImageUrls = extractImageUrls(previousContent);
-        const currentImageUrls = extractImageUrls(currentJson);
-        const deletedImageUrls = [...previousImageUrls].filter(
-          (url) => !currentImageUrls.has(url),
-        );
-
-        const previousVideoUrls = extractVideoUrls(previousContent);
-        const currentVideoUrls = extractVideoUrls(currentJson);
-        const deletedVideoUrls = [...previousVideoUrls].filter(
-          (url) => !currentVideoUrls.has(url),
-        );
-
-        // Handle deleted images
-        deletedImageUrls.forEach((url) => {
-          if (onImageDelete) {
-            onImageDelete(url).catch((error) => {
-              console.error("Failed to delete image:", error);
-            });
-          }
-        });
-
-        // Handle deleted videos
-        deletedVideoUrls.forEach((url) => {
-          if (onVideoDelete) {
-            onVideoDelete(url).catch((error) => {
-              console.error("Failed to delete video:", error);
-            });
-          }
-        });
-      }
+      // Schedules deletion of media dropped since the last update, and cancels
+      // any pending deletion for media that came back.
+      reconcileMedia(previousContent, currentJson);
 
       // Update previous content for next comparison
       setPreviousContent(currentJson);
 
       // Force component re-render when editor content changes
-      setEditorContent?.({ html: editor.getHTML(), json: currentJson });
+      reportContent({ html: editor.getHTML(), json: currentJson });
       forceUpdate({});
     },
     onSelectionUpdate: () => {
-      // Force component re-render when selection changes
-      setEditorContent?.({ html: editor.getHTML(), json: editor.getJSON() });
+      // Force component re-render when selection changes. The content itself is
+      // unchanged, so the host is not notified — moving the cursor is not an
+      // edit, and reporting it made every caret move look like one.
       forceUpdate({});
     },
   });
