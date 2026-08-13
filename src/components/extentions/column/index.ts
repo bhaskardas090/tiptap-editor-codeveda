@@ -1,5 +1,7 @@
 import { Node, mergeAttributes, findParentNode } from "@tiptap/core";
+import { ReactNodeViewRenderer } from "@tiptap/react";
 import { selectAllWithin } from "../core-elements/selectAllWithin";
+import ColumnComponent from "./ColumnComponent";
 
 export interface ColumnLayoutOptions {
   HTMLAttributes: Record<string, any>;
@@ -136,6 +138,12 @@ export const Column = Node.create({
       // selecting the whole document.
       "Mod-a": ({ editor }: any) => selectAllWithin(editor),
     };
+  },
+
+  addNodeView() {
+    return ReactNodeViewRenderer(ColumnComponent, {
+      contentDOMElementTag: "div",
+    });
   },
 
   parseHTML() {

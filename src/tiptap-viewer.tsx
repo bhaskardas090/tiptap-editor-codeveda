@@ -26,6 +26,7 @@ import {
   Video,
   ColumnLayout,
   Column,
+  ScopedClipboard,
 } from "./components/extentions";
 import {
   LivePreviewDarkModeProvider,
@@ -88,6 +89,7 @@ const Tiptap = ({
       LivePreview,
       ColumnLayout,
       Column,
+      ScopedClipboard,
       Video.configure({
         inline: false,
         allowBase64: true,

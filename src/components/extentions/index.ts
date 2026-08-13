@@ -24,6 +24,9 @@ export { ColumnLayout, Column } from "./column";
 // UI Components
 export * from "./ui-components";
 
+// Behaviour
+export { ScopedClipboard } from "./core-elements/scopedClipboard";
+
 // Services
 export { createImageUploadService } from "./image/imageService";
 export { createVideoUploadService } from "./video/videoService";

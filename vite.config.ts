@@ -51,6 +51,12 @@ export default defineConfig({
         "react-dom",
         "@tiptap/react",
         "@tiptap/core",
+        // Must stay external: a bundled copy would give the editor a second
+        // prosemirror-model/state, so our Slice would not be the Slice the
+        // running view understands.
+        "@tiptap/pm",
+        "@tiptap/pm/model",
+        "@tiptap/pm/state",
         "@tiptap/starter-kit",
         "@tiptap/extension-table",
         "@tiptap/extension-table-row",

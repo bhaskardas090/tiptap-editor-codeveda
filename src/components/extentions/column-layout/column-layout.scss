@@ -1,25 +1,54 @@
 /* Column Layout Extension Styles */
 
+/*
+ * The layout element itself is plain rendered HTML in both the editor and in
+ * stored content, so it is the grid container either way:
+ *
+ *   div[data-type="column-layout"]
+ *     > div[data-type="column"]              <- stored HTML
+ *
+ *   div[data-type="column-layout"]
+ *     > .react-renderer                      <- editor: each column is a node
+ *         > div[data-type="column"]             view, wrapped by React
+ *
+ * So the grid item is the column itself in stored content and the React
+ * wrapper around it in the editor — which is why the sizing rules below reach
+ * for `> *` rather than naming either one.
+ */
+
 .tiptap-editor div[data-type="column-layout"] {
   display: grid;
   gap: 1rem;
   margin: 1rem 0;
-}
+  /* minmax(0, 1fr) rather than 1fr: grid items default to min-width auto, so
+     wide content (a code block with long lines, a table) would force the track
+     past its share and push the layout past the editor width. 0 lets the track
+     stay at its share and the child's own overflow-x handle the scrolling. */
+  grid-template-columns: repeat(var(--column-count, 2), minmax(0, 1fr));
 
-.tiptap-editor div[data-type="column-layout"][data-columns="1"] {
-  grid-template-columns: 1fr;
-}
+  &[data-columns="1"] {
+    --column-count: 1;
+  }
+  &[data-columns="2"] {
+    --column-count: 2;
+  }
+  &[data-columns="3"] {
+    --column-count: 3;
+  }
+  &[data-columns="4"] {
+    --column-count: 4;
+  }
 
-.tiptap-editor div[data-type="column-layout"][data-columns="2"] {
-  grid-template-columns: 1fr 1fr;
-}
+  /* The grid item, whichever of the two it is. */
+  > * {
+    min-width: 0;
+  }
 
-.tiptap-editor div[data-type="column-layout"][data-columns="3"] {
-  grid-template-columns: 1fr 1fr 1fr;
-}
-
-.tiptap-editor div[data-type="column-layout"][data-columns="4"] {
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  /* Editor only: the column sits inside the React wrapper, so it has to be
+     told to fill the track it was given. */
+  > * > div[data-type="column"] {
+    height: 100%;
+  }
 }
 
 .tiptap-editor div[data-type="column"] {
@@ -27,27 +56,41 @@
   border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
   min-height: 16px;
-  /* Grid items default to min-width: auto, so wide content (a code block with
-     long lines, a table) forces the track past its 1fr share and pushes the
-     layout past the editor width. 0 lets the track stay at 1fr and the
-     child's own overflow-x handle the scrolling. */
   min-width: 0;
+  /* Anchors this column's remove button. */
+  position: relative;
+}
+
+/* The remove button stays out of the way until its column is hovered. */
+.tiptap-editor .column-remove-button {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  cursor: pointer;
+}
+
+.tiptap-editor .column-container:hover .column-remove-button,
+.tiptap-editor .column-remove-button:focus {
+  opacity: 1;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .tiptap-editor div[data-type="column-layout"][data-columns="3"],
-  .tiptap-editor div[data-type="column-layout"][data-columns="4"] {
-    grid-template-columns: 1fr;
-  }
-
-  .tiptap-editor div[data-type="column-layout"][data-columns="2"] {
-    grid-template-columns: 1fr;
+  .tiptap-editor
+    div[data-type="column-layout"]:is(
+      [data-columns="2"],
+      [data-columns="3"],
+      [data-columns="4"]
+    ) {
+    --column-count: 1;
   }
 }
 
 @media (min-width: 768px) and (max-width: 1024px) {
   .tiptap-editor div[data-type="column-layout"][data-columns="4"] {
-    grid-template-columns: 1fr 1fr;
+    --column-count: 2;
   }
 }

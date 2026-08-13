@@ -39,6 +39,7 @@ import {
   logEditorContent,
   ColumnLayout,
   Column,
+  ScopedClipboard,
 } from "./components/extentions";
 import { isYouTubeUrl } from "./components/extentions/video/videoUtils";
 import { trackInsertPosition } from "./components/extentions/core-elements/trackInsertPosition";
@@ -153,6 +154,7 @@ const Tiptap: React.FC<TiptapProps> = ({
       LivePreview,
       ColumnLayout,
       Column,
+      ScopedClipboard,
       Video.configure({
         inline: false,
         allowBase64: true,
