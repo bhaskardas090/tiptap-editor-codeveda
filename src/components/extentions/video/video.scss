@@ -17,9 +17,29 @@
   z-index: 1;
 }
 
+/* Clicking a video focuses the element (it is focusable because of `controls`).
+   The blue ring is kept for keyboard focus only, so a plain click no longer
+   draws one. */
 .tiptap-editor video:focus {
+  outline: none;
+}
+
+.tiptap-editor video:focus-visible {
   outline: 2px solid #3b82f6;
   outline-offset: 2px;
+}
+
+/* Clicking also makes this a ProseMirror node selection, which the generic
+   `.ProseMirror-selectednode` rule in core-elements.scss would ring in blue.
+   Suppressed here for videos only; other node types keep the affordance.
+
+   The class lands on the node view's outer element, which `ReactNodeViewRenderer`
+   creates as `<div class="react-renderer node-video">` — NOT on `.video-node-view`,
+   which is the `NodeViewWrapper` rendered inside it. Targeting `.video-node-view`
+   here would silently match nothing. */
+.tiptap-editor .node-video.ProseMirror-selectednode,
+.tiptap-editor video.ProseMirror-selectednode {
+  outline: none;
 }
 
 .tiptap-editor video:hover {
@@ -88,6 +108,22 @@
   height: auto;
   display: block;
   border-radius: 0.5rem;
+}
+
+/* The generic `.tiptap-editor video` rule above also matches the node view's
+   own <video>, so without these resets the player gets a second border and is
+   inset by its own 1rem margin — which reads as stray lines above and below it.
+   `.video-container` is the only frame; the video fills it edge to edge. */
+.video-container .video-element {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.video-container .video-element:hover {
+  box-shadow: none;
+  transform: none;
 }
 
 /* YouTube embeds (responsive 16:9) */
