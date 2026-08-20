@@ -1,12 +1,14 @@
 /* Core Elements Extension Styles */
 
-/* Headings */
+/* Headings
+   Each level gets breathing room above and a slightly tighter gap below, so a
+   heading sits closer to the content it introduces than to the block before it. */
 .tiptap-editor h1 {
   font-size: 2.25rem;
   font-weight: 700;
   line-height: 2.5rem;
-  margin-top: 1.5rem;
-  margin-bottom: 1rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
   color: #1f2937;
 }
 
@@ -14,8 +16,8 @@
   font-size: 1.875rem;
   font-weight: 600;
   line-height: 2.25rem;
-  margin-top: 1.5rem;
-  margin-bottom: 0.75rem;
+  margin-top: 2rem;
+  margin-bottom: 1.25rem;
   color: #1f2937;
 }
 
@@ -23,8 +25,8 @@
   font-size: 1.5rem;
   font-weight: 600;
   line-height: 2rem;
-  margin-top: 1.25rem;
-  margin-bottom: 0.75rem;
+  margin-top: 1.75rem;
+  margin-bottom: 1rem;
   color: #1f2937;
 }
 
@@ -32,9 +34,24 @@
   font-size: 1.25rem;
   font-weight: 600;
   line-height: 1.75rem;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.875rem;
   color: #1f2937;
+}
+
+.tiptap-editor h5,
+.tiptap-editor h6 {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5rem;
+  margin-top: 1.25rem;
+  margin-bottom: 0.75rem;
+  color: #1f2937;
+}
+
+/* A heading that opens the document shouldn't push the content down. */
+.tiptap-editor .ProseMirror > :is(h1, h2, h3, h4, h5, h6):first-child {
+  margin-top: 0;
 }
 
 /* Paragraphs */
@@ -81,8 +98,8 @@
   margin: 2rem 0;
 }
 
-/* Code */
-.tiptap-editor code {
+/* Inline code (fenced code blocks are styled in code-block.scss) */
+.tiptap-editor :not(pre) > code {
   background-color: #f3f4f6;
   color: #ef4444;
   padding: 0.125rem 0.25rem;

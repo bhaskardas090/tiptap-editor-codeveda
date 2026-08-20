@@ -13,6 +13,10 @@ const CodeBlockComponent: React.FC<NodeViewProps> = ({ node }) => {
     };
   }, []);
 
+  // Mirrors the class the extension writes to stored HTML, so the styling for a
+  // given language is identical in the editor and in rendered content.
+  const language = node.attrs.language || "plaintext";
+
   const handleCopy = () => {
     navigator.clipboard
       .writeText(node.textContent)
@@ -36,7 +40,11 @@ const CodeBlockComponent: React.FC<NodeViewProps> = ({ node }) => {
         {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
       </button>
       <pre>
-        <NodeViewContent style={{ whiteSpace: "pre", wordBreak: "normal", overflowWrap: "normal" }} />
+        <NodeViewContent<"code">
+          as="code"
+          className={`language-${language}`}
+          style={{ whiteSpace: "pre", wordBreak: "normal", overflowWrap: "normal" }}
+        />
       </pre>
     </NodeViewWrapper>
   );

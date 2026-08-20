@@ -48,6 +48,15 @@
       color: #f98181;
     }
 
+    /* JSON object keys */
+    .hljs-attr {
+      color: #f98181;
+    }
+
+    .hljs-punctuation {
+      color: var(--white);
+    }
+
     .hljs-number,
     .hljs-meta,
     .hljs-built_in,
@@ -80,6 +89,18 @@
 
     .hljs-strong {
       font-weight: 700;
+    }
+
+    /* Plain text: nothing is a token, so every span stays white. The
+       `defaultLanguage` on the extension already suppresses auto-detection;
+       this also covers content highlighted before that was in place. */
+    code.language-plaintext,
+    code:not([class*="language-"]),
+    > div:not([class*="language-"]) {
+      &,
+      span:not([data-background-color]) {
+        color: var(--white);
+      }
     }
   }
 

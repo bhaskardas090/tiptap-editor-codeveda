@@ -11,6 +11,8 @@ import java from "highlight.js/lib/languages/java";
 import c from "highlight.js/lib/languages/c";
 import cplusplus from "highlight.js/lib/languages/cpp";
 import sql from "highlight.js/lib/languages/sql";
+import json from "highlight.js/lib/languages/json";
+import plaintext from "highlight.js/lib/languages/plaintext";
 // Configure lowlight with common languages
 const lowlight = createLowlight(all);
 
@@ -24,6 +26,11 @@ lowlight.register("c", c);
 lowlight.register("cpp", cplusplus);
 lowlight.register("python", python3);
 lowlight.register("sql", sql);
+lowlight.register("json", json);
+// "plaintext" is a real, empty grammar: highlighting with it yields zero spans,
+// so a plain-text block keeps the <pre> colour instead of being auto-detected
+// and coloured as whatever language it happens to resemble.
+lowlight.register("plaintext", plaintext);
 
 // Extend CodeBlockLowlight to allow codeBlockBg mark
 export const CodeBlockExtension = CodeBlockLowlight.extend({
@@ -35,6 +42,9 @@ export const CodeBlockExtension = CodeBlockLowlight.extend({
   },
 }).configure({
   lowlight,
+  // Code blocks that arrive without a language (typed, pasted, or loaded from
+  // stored HTML) default to plain text rather than being auto-highlighted.
+  defaultLanguage: "plaintext",
 });
 
 export { CodeBlockBg } from "./code-block-bg";

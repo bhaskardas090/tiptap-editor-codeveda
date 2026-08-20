@@ -58,8 +58,9 @@ $dm-accent: #3b82f6;
       border-top-color: $dm-border;
     }
 
-    /* Inline code (fenced code blocks already render on a dark surface) */
-    code {
+    /* Inline code only — fenced code blocks render their own dark surface and
+       syntax colors, so they must not pick up the inline-code treatment. */
+    :not(pre) > code {
       background-color: $dm-border;
       color: #ff7b72;
     }

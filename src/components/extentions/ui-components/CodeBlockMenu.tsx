@@ -13,7 +13,7 @@ interface CodeBlockMenuProps {
 
 // Available languages for code blocks
 const LANGUAGES = [
-  { value: "", label: "Plain Text" },
+  { value: "plaintext", label: "Plain Text" },
   { value: "html", label: "HTML" },
   { value: "css", label: "CSS" },
   { value: "js", label: "JavaScript" },
@@ -23,6 +23,7 @@ const LANGUAGES = [
   { value: "c", label: "C" },
   { value: "cpp", label: "C++" },
   { value: "sql", label: "SQL" },
+  { value: "json", label: "JSON" },
 ];
 
 const CodeBlockMenu: React.FC<CodeBlockMenuProps> = ({
@@ -33,8 +34,10 @@ const CodeBlockMenu: React.FC<CodeBlockMenuProps> = ({
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const languageDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Get current language from code block
-  const currentLanguage = editor.getAttributes("codeBlock").language || "";
+  // Get current language from code block. Blocks saved before "plaintext"
+  // existed carry a null language, which is still plain text.
+  const currentLanguage =
+    editor.getAttributes("codeBlock").language || "plaintext";
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -62,7 +65,7 @@ const CodeBlockMenu: React.FC<CodeBlockMenuProps> = ({
     editor
       .chain()
       .focus()
-      .updateAttributes("codeBlock", { language: language || null })
+      .updateAttributes("codeBlock", { language: language || "plaintext" })
       .run();
     setShowLanguageDropdown(false);
   };
