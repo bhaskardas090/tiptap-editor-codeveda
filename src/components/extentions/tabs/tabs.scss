@@ -65,11 +65,18 @@ $max-tabs: 6;
 }
 
 /* Grow to fill the row while the tabs fit, never shrink below a readable
-   width once they don't (that overflow is what makes the strip scrollable). */
+   width once they don't (that overflow is what makes the strip scrollable).
+   A title longer than `max-width` is truncated with an ellipsis. */
 .tabs-container .tab-header-item {
   flex: 1 0 auto;
   min-width: 7.5rem;
   max-width: 16rem;
+}
+
+/* The active tab is the one being read, so it drops the cap and shows its
+   title in full; the strip scrolls if that pushes the tabs past the row. */
+.tabs-container .tab-header-item[data-active="true"] {
+  max-width: none;
 }
 
 .tabs-container .tab-remove-button {

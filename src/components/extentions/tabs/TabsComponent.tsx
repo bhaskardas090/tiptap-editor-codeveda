@@ -341,7 +341,11 @@ export default function TabsComponent({
                       onDoubleClick={(e) => e.stopPropagation()}
                     />
                   ) : (
-                    <span className="block w-full text-center truncate cursor-pointer">
+                    <span
+                      className={`block w-full text-center cursor-pointer ${
+                        activeTab === index ? "whitespace-nowrap" : "truncate"
+                      }`}
+                    >
                       {getTabTitle(index)}
                     </span>
                   )}
