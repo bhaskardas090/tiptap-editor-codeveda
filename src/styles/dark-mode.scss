@@ -23,6 +23,12 @@ $dm-accent: #3b82f6;
   background-color: $dm-bg;
   color: $dm-text;
 
+  /* Media skeletons read as a lit panel on light backgrounds; on dark they
+     have to be a raised surface with a far dimmer sweep, or the animation
+     flashes white against the page. */
+  --tt-skeleton-bg: #{$dm-hover};
+  --tt-skeleton-sheen: rgba(255, 255, 255, 0.06);
+
   /* Flip the common Tailwind utility colors used by the chrome (toolbar
      dividers, editor frame, menus, input boxes) so they read on dark. */
   .border-gray-300 {
@@ -213,6 +219,16 @@ $dm-accent: #3b82f6;
     }
 
     .image-caption {
+      color: $dm-text-muted;
+    }
+
+    .image-skeleton,
+    .image-error {
+      border-color: $dm-border;
+    }
+
+    .image-error {
+      background-color: $dm-elevated;
       color: $dm-text-muted;
     }
   }

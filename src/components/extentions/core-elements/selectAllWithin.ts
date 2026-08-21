@@ -15,6 +15,10 @@ export const SELECT_ALL_BOUNDARIES = [
   "column",
   "accordionItem",
   "blockquote",
+  // A code block is a textblock rather than a container, so it is always the
+  // innermost match — "select all" in a code block nested in a table cell
+  // takes the code, not the cell.
+  "codeBlock",
 ] as const;
 
 /**

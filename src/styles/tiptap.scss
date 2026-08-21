@@ -1,5 +1,9 @@
 /* Tiptap Editor Styles */
 
+/* Shared media loading placeholder — first, so the extension styles below can
+   position and override it. */
+@use "@/styles/_media-skeleton.scss";
+
 /* Import extension-specific styles */
 @use "@/components/extentions/video/video.scss";
 @use "@/components/extentions/table/table.scss";

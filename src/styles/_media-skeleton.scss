@@ -1,0 +1,59 @@
+/* Shared skeleton placeholder for media that is still loading.
+   Used by the image and video node views while the browser fetches the asset,
+   so a document opens at its final height instead of reflowing as each item
+   arrives. Consumers can retheme it by redefining the variables below. */
+
+:root {
+  --tt-skeleton-bg: #e9ecef;
+  --tt-skeleton-sheen: rgba(255, 255, 255, 0.65);
+  --tt-skeleton-radius: 0.5rem;
+  /* The box reserved before the asset's real dimensions are known. */
+  --tt-media-skeleton-aspect: 16 / 9;
+}
+
+.tt-media-skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--tt-skeleton-bg);
+  border-radius: var(--tt-skeleton-radius);
+  /* The sweep is painted by the pseudo-element so the base colour can be
+     restyled without redefining the animation. */
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--tt-skeleton-sheen) 50%,
+      transparent 100%
+    );
+    animation: tt-skeleton-sweep 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes tt-skeleton-sweep {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Media fades in rather than snapping, which reads as a continuation of the
+   skeleton instead of a second, competing change. */
+@keyframes tt-media-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* A sweeping highlight is exactly the kind of motion this setting asks us to
+   drop; the flat block still communicates "loading". */
+@media (prefers-reduced-motion: reduce) {
+  .tt-media-skeleton::after {
+    animation: none;
+  }
+}

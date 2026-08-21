@@ -77,6 +77,25 @@
   display: none;
 }
 
+/* Loading state. The skeleton covers the whole frame, and the container is
+   held at the placeholder aspect ratio until the player reports its real
+   dimensions — otherwise a <video> with no metadata yet collapses to the
+   browser's default 150px and the frame jumps when it loads. */
+.video-skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 0;
+}
+
+.video-container[data-status="loading"] {
+  aspect-ratio: var(--tt-media-skeleton-aspect, 16 / 9);
+}
+
+.video-container[data-status="loaded"] .video-element {
+  animation: tt-media-fade-in 0.2s ease;
+}
+
 /* Video Loading State */
 .tiptap-editor video:not([src]) {
   background: linear-gradient(45deg, #f3f4f6 25%, transparent 25%),

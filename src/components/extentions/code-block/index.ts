@@ -1,5 +1,6 @@
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { ReactNodeViewRenderer } from "@tiptap/react";
+import { selectAllWithin } from "../core-elements/selectAllWithin";
 import CodeBlockComponent from "./CodeBlockComponent";
 import { all, createLowlight } from "lowlight";
 import css from "highlight.js/lib/languages/css";
@@ -39,6 +40,14 @@ export const CodeBlockExtension = CodeBlockLowlight.extend({
   },
   addNodeView() {
     return ReactNodeViewRenderer(CodeBlockComponent);
+  },
+  addKeyboardShortcuts() {
+    return {
+      ...this.parent?.(),
+      // Keep "select all" inside the code block the cursor is in, instead of
+      // selecting the whole document.
+      "Mod-a": ({ editor }: any) => selectAllWithin(editor),
+    };
   },
 }).configure({
   lowlight,
