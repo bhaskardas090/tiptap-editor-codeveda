@@ -5,7 +5,7 @@ export { ImageExtension } from "./image";
 export { LinkExtension } from "./link";
 export { TextStyleExtension, ColorExtension } from "./text-style";
 export { HighlightExtension } from "./highlight";
-export { CodeBlockExtension, CodeBlockBg } from "./code-block";
+export { CodeBlockExtension, CodeBlockBg, CodeBlockColor } from "./code-block";
 export {
   UnderlineExtension,
   StrikeExtension,

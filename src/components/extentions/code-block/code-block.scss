@@ -29,6 +29,16 @@
       color: inherit;
     }
 
+    /* Code block text color mark. The colour itself rides on the span's inline
+       style — an inline declaration is the only thing that reliably outranks
+       the .hljs-* rules below, which would otherwise recolour a highlighted
+       token inside a run the user deliberately coloured. Nesting either way
+       round works: the background mark declares `color: inherit`, so it never
+       competes for the text colour. */
+    code span[data-text-color] {
+      border-radius: 3px;
+    }
+
     /* Code styling */
     .hljs-comment,
     .hljs-quote {
@@ -98,7 +108,7 @@
     code:not([class*="language-"]),
     > div:not([class*="language-"]) {
       &,
-      span:not([data-background-color]) {
+      span:not([data-background-color]):not([data-text-color]) {
         color: var(--white);
       }
     }

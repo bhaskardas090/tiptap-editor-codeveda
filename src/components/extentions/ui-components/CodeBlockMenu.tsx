@@ -3,7 +3,8 @@ import { BubbleMenu as TiptapBubbleMenu } from "@tiptap/react/menus";
 import { Editor } from "@tiptap/react";
 import MenuButton from "./MenuButton";
 import PresetCodeBlockBg from "./PresetCodeBlockBg";
-import { Palette, ChevronDown, Code } from "lucide-react";
+import PresetCodeBlockColor from "./PresetCodeBlockColor";
+import { Palette, ChevronDown, Code, Baseline } from "lucide-react";
 import { Button } from "../../ui/button";
 
 interface CodeBlockMenuProps {
@@ -31,6 +32,7 @@ const CodeBlockMenu: React.FC<CodeBlockMenuProps> = ({
   isReadOnly,
 }) => {
   const [showBgColorPicker, setShowBgColorPicker] = useState(false);
+  const [showTextColorPicker, setShowTextColorPicker] = useState(false);
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const languageDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -86,6 +88,7 @@ const CodeBlockMenu: React.FC<CodeBlockMenuProps> = ({
             onClick={() => {
               setShowLanguageDropdown(!showLanguageDropdown);
               setShowBgColorPicker(false);
+              setShowTextColorPicker(false);
             }}
             title="Select Language"
             className="px-2 min-w-[120px]"
@@ -133,6 +136,7 @@ const CodeBlockMenu: React.FC<CodeBlockMenuProps> = ({
             onClick={() => {
               setShowBgColorPicker(!showBgColorPicker);
               setShowLanguageDropdown(false);
+              setShowTextColorPicker(false);
             }}
             title="Background Color"
             isActive={editor.isActive("codeBlockBg")}
@@ -145,6 +149,31 @@ const CodeBlockMenu: React.FC<CodeBlockMenuProps> = ({
                 onColorChange={(color) => {
                   editor.chain().focus().toggleCodeBlockBg(color).run();
                   setShowBgColorPicker(false);
+                }}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Text Color */}
+        <div className="relative">
+          <MenuButton
+            onClick={() => {
+              setShowTextColorPicker(!showTextColorPicker);
+              setShowLanguageDropdown(false);
+              setShowBgColorPicker(false);
+            }}
+            title="Text Color"
+            isActive={editor.isActive("codeBlockColor")}
+          >
+            <Baseline className="h-4 w-4 cursor-pointer" />
+          </MenuButton>
+          {showTextColorPicker && (
+            <div className="absolute top-full mt-1 z-10 bg-white border border-gray-300 rounded-lg p-2 shadow-lg">
+              <PresetCodeBlockColor
+                onColorChange={(color) => {
+                  editor.chain().focus().toggleCodeBlockColor(color).run();
+                  setShowTextColorPicker(false);
                 }}
               />
             </div>

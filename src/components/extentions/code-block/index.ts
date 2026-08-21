@@ -35,8 +35,10 @@ lowlight.register("plaintext", plaintext);
 
 // Extend CodeBlockLowlight to allow codeBlockBg mark
 export const CodeBlockExtension = CodeBlockLowlight.extend({
+  // Marks allowed inside a code block. CodeBlock sets `marks: ""` by default,
+  // so anything usable in here has to be named explicitly.
   marks() {
-    return "codeBlockBg";
+    return "codeBlockBg codeBlockColor";
   },
   addNodeView() {
     return ReactNodeViewRenderer(CodeBlockComponent);
@@ -57,3 +59,4 @@ export const CodeBlockExtension = CodeBlockLowlight.extend({
 });
 
 export { CodeBlockBg } from "./code-block-bg";
+export { CodeBlockColor } from "./code-block-color";
