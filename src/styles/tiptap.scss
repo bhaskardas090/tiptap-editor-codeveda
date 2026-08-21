@@ -1,5 +1,9 @@
 /* Tiptap Editor Styles */
 
+/* Text/highlight palette variables — declarations only, so they can sit ahead
+   of everything that resolves against them. */
+@use "@/styles/_text-palette.scss";
+
 /* Shared media loading placeholder — first, so the extension styles below can
    position and override it. */
 @use "@/styles/_media-skeleton.scss";

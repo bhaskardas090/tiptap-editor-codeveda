@@ -1,0 +1,63 @@
+/* Text and highlight palette.
+
+   Documents store colours as `var(--tt-palette-text-red, #C4554D)` rather than
+   a literal hex, so the same saved document renders in the light values on a
+   light theme and the dark values on a dark one. The declarations below are
+   what those references resolve against.
+
+   The hexes are mirrored in `src/components/extentions/ui-components/
+   textPalette.ts`, which the pickers read; change one and change the other. */
+
+:root {
+  /* Text — light */
+  --tt-palette-text-default: #373530;
+  --tt-palette-text-gray: #787774;
+  --tt-palette-text-brown: #976d57;
+  --tt-palette-text-orange: #cc782f;
+  --tt-palette-text-yellow: #c29343;
+  --tt-palette-text-green: #548164;
+  --tt-palette-text-blue: #487ca5;
+  --tt-palette-text-purple: #8a67ab;
+  --tt-palette-text-pink: #b35488;
+  --tt-palette-text-red: #c4554d;
+
+  /* Highlight — light */
+  --tt-palette-bg-default: #ffffff;
+  --tt-palette-bg-gray: #f1f1ef;
+  --tt-palette-bg-brown: #f3eeee;
+  --tt-palette-bg-orange: #f8ecdf;
+  --tt-palette-bg-yellow: #faf3dd;
+  --tt-palette-bg-green: #eef3ed;
+  --tt-palette-bg-blue: #e9f3f7;
+  --tt-palette-bg-purple: #f6f3f8;
+  --tt-palette-bg-pink: #f9f2f5;
+  --tt-palette-bg-red: #faecec;
+}
+
+/* `tiptap-dark` sits on the editor and viewer root wrappers, so redefining the
+   variables there is enough — every coloured span inherits down to it. */
+.tiptap-dark {
+  /* Text — dark */
+  --tt-palette-text-default: #d4d4d4;
+  --tt-palette-text-gray: #9b9b9b;
+  --tt-palette-text-brown: #a27763;
+  --tt-palette-text-orange: #cb7b37;
+  --tt-palette-text-yellow: #c19138;
+  --tt-palette-text-green: #4f9768;
+  --tt-palette-text-blue: #447acb;
+  --tt-palette-text-purple: #865dbb;
+  --tt-palette-text-pink: #ba4a78;
+  --tt-palette-text-red: #be524b;
+
+  /* Highlight — dark */
+  --tt-palette-bg-default: #191919;
+  --tt-palette-bg-gray: #252525;
+  --tt-palette-bg-brown: #2e2724;
+  --tt-palette-bg-orange: #36291f;
+  --tt-palette-bg-yellow: #372e20;
+  --tt-palette-bg-green: #242b26;
+  --tt-palette-bg-blue: #1f282d;
+  --tt-palette-bg-purple: #2a2430;
+  --tt-palette-bg-pink: #2e2328;
+  --tt-palette-bg-red: #332523;
+}

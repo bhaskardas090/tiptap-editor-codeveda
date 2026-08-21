@@ -4,39 +4,30 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "../../tiptap-ui-primitive/tooltip";
+import { TEXT_PALETTE, backgroundValue } from "./textPalette";
 
 interface ColorPickerBgProps {
   onColorChange: (color: string) => void;
 }
 
 const ColorPickerBg: React.FC<ColorPickerBgProps> = ({ onColorChange }) => {
-  const colors = [
-    "#B0B0B0",
-    "#F2F0EF",
-    "#e7e4de",
-    "#f3e1d5",
-    "#ffe4c2",
-    "#fff7cc",
-    "#d6f2e3",
-    "#d5e6fa",
-    "#ebddf5",
-    "#f9d6e8",
-    "#f8d0cb",
-  ];
-
   return (
     <div className="flex flex-wrap gap-1 w-32">
-      {colors.map((color) => (
-        <Tooltip key={color} delay={300} closeDelay={0}>
+      {TEXT_PALETTE.map((color) => (
+        <Tooltip key={color.name} delay={300} closeDelay={0}>
           <TooltipTrigger asChild>
             <button
               type="button"
               className="w-6 h-6 rounded border border-gray-300 cursor-pointer hover:scale-110 transition-transform"
-              style={{ backgroundColor: color }}
-              onClick={() => onColorChange(color)}
+              // Same variable the document will resolve, so the swatch previews
+              // the colour for the theme actually in effect.
+              style={{
+                backgroundColor: `var(--tt-palette-bg-${color.name})`,
+              }}
+              onClick={() => onColorChange(backgroundValue(color))}
             />
           </TooltipTrigger>
-          <TooltipContent>Set background color to {color}</TooltipContent>
+          <TooltipContent>{color.label}</TooltipContent>
         </Tooltip>
       ))}
     </div>
